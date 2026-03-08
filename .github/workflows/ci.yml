@@ -22,7 +22,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f package.json ]; then
+          if [ -f web/package.json ]; then
+            cd web
+            npm ci
+            if npm run | grep -q " lint"; then
+              npm run lint
+            else
+              echo "No lint script found in web/package.json. Skipping npm lint."
+            fi
+          elif [ -f package.json ]; then
             npm ci
             if npm run | grep -q " lint"; then
               npm run lint
@@ -52,7 +60,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f package.json ]; then
+          if [ -f web/package.json ]; then
+            cd web
+            npm ci
+            if npm run | grep -q " test"; then
+              npm test -- --ci
+            else
+              echo "No test script found in web/package.json. Running smoke checks."
+              test -s app/page.tsx
+            fi
+          elif [ -f package.json ]; then
             npm ci
             if npm run | grep -q " test"; then
               npm test -- --ci
@@ -83,7 +100,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f package.json ]; then
+          if [ -f web/package.json ]; then
+            cd web
+            npm ci
+            if npm run | grep -q " build"; then
+              npm run build
+            else
+              echo "No build script found in web/package.json. Skipping npm build."
+            fi
+          elif [ -f package.json ]; then
             npm ci
             if npm run | grep -q " build"; then
               npm run build
