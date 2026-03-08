@@ -1,4 +1,4 @@
-﻿export const siteContent = {
+export const siteContent = {
   businessName: "Pedro Lucas Barbearia",
   city: "Natal",
   state: "RN",

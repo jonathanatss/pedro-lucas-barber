@@ -1,4 +1,4 @@
-﻿# Web (Next.js)
+# Web (Next.js)
 
 Base inicial da migração para Next.js + TypeScript.
 

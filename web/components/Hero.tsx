@@ -1,4 +1,4 @@
-﻿import { siteContent } from "@/content/site";
+import { siteContent } from "@/content/site";
 
 export function Hero() {
   return (
