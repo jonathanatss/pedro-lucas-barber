@@ -1,0 +1,18 @@
+﻿{
+  "business": {
+    "name": "Pedro Lucas Barbearia",
+    "city": "Natal",
+    "state": "RN",
+    "phone": "+55 84 98619-7944",
+    "whatsapp": "https://wa.me/5584986197944",
+    "instagram": "https://www.instagram.com/plucas.barbeer/"
+  },
+  "hours": {
+    "weekdays": "Segunda a Sábado: 9h às 18h",
+    "sunday": "Domingo: Fechado"
+  },
+  "notes": [
+    "Na Fase 2, esse arquivo pode virar fonte de conteúdo para páginas/sections no Next.js.",
+    "Centralizar dados aqui reduz retrabalho ao mudar contato, preços ou horários."
+  ]
+}
