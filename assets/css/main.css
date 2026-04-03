@@ -1,4 +1,6 @@
-﻿/* ===== SCROLL OFFSET FOR FIXED HEADER ===== */
+@charset "UTF-8";
+
+/* ===== SCROLL OFFSET FOR FIXED HEADER ===== */
     section[id], footer[id] { scroll-margin-top: 76px; }
 
     /* ===== RESET & VARIABLES ===== */
@@ -292,7 +294,7 @@
       padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.05);
       font-size: 14px; display: flex; gap: 10px; align-items: flex-start;
     }
-    .plan-features li::before { content: 'âœ¦'; color: var(--gold); font-size: 10px; margin-top: 3px; flex-shrink: 0; }
+    .plan-features li::before { content: '✦'; color: var(--gold); font-size: 10px; margin-top: 3px; flex-shrink: 0; }
     .plan-payment-info {
       margin-top: 12px; font-size: 11px; color: var(--gray);
     }
@@ -576,7 +578,7 @@
       position: relative; overflow: hidden;
     }
     #cta-final::before {
-      content: 'âœ‚'; position: absolute; font-size: 300px; opacity: .03;
+      content: '✂'; position: absolute; font-size: 300px; opacity: .03;
       top: 50%; left: 50%; transform: translate(-50%, -50%); user-select: none;
     }
     #cta-final .section-tag { justify-content: center; }
@@ -635,7 +637,7 @@
 
     /* ===== RESPONSIVE ===== */
 
-    /* Intermediate: nav gets tighter between 900â€“1160px */
+    /* Intermediate: nav gets tighter between 900–1160px */
     @media (max-width: 1160px) {
       nav { gap: 18px; }
       nav a { font-size: 11px; letter-spacing: 1px; }
