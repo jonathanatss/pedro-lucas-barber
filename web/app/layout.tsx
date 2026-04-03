@@ -1,10 +1,22 @@
 import type { Metadata } from "next";
+import { Playfair_Display, Raleway } from "next/font/google";
+
 import "./globals.css";
+
+const headingFont = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-display",
+});
+
+const bodyFont = Raleway({
+  subsets: ["latin"],
+  variable: "--font-body",
+});
 
 export const metadata: Metadata = {
   title: "Pedro Lucas Barbearia | Natal/RN",
   description:
-    "Corte e barba com precisão e estilo em Natal/RN. Agende online por WhatsApp.",
+    "Corte e barba com precisão e estilo em Natal/RN. Agende online direto no site.",
 };
 
 export default function RootLayout({
@@ -14,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body className={`${headingFont.variable} ${bodyFont.variable}`}>{children}</body>
     </html>
   );
 }

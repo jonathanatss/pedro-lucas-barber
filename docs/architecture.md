@@ -32,7 +32,7 @@ Evoluir a landing page estática para uma arquitetura profissional com baixo ris
 - `app/` rotas e layout
 - `features/` módulos de negócio (agendamento, serviços, avaliações)
 - `components/` UI reutilizável
-- `lib/` integrações (analytics, WhatsApp, Calendly)
+- `lib/` integrações (analytics, WhatsApp, Supabase, Google Calendar)
 - `content/` dados de conteúdo e copy
 - `styles/` tokens globais
 

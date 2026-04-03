@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pedro Lucas Barbearia – Corte & Barba em Natal/RN</title>
-  <meta name="description" content="Pedro Lucas Barbearia – Corte e barba com precisão e estilo em Natal/RN. Agende online agora pelo Calendly ou WhatsApp." />
+  <meta name="description" content="Pedro Lucas Barbearia – Corte e barba com precisão e estilo em Natal/RN. Agende online agora pelo site ou WhatsApp." />
 
   <!-- Open Graph / WhatsApp / Facebook -->
   <meta property="og:type" content="business.business" />
@@ -30,7 +30,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232b3320'/><text y='.9em' x='10' font-size='80'>✂</text></svg>" />
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232b3320'/><text y='.9em' x='10' font-size='80'>✂</text></svg>" />
 
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; frame-src https://calendly.com https://*.calendly.com;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; frame-src 'self';" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -57,7 +57,7 @@
         <a href="#avaliacoes">Avaliações</a>
         <a href="#localizacao">Localização</a>
         <a href="#faq">FAQ</a>
-        <a href="#agendamento" class="btn btn-gold" style="padding:10px 20px;font-size:12px;">Agendar</a>
+        <a href="/agendar" class="btn btn-gold" style="padding:10px 20px;font-size:12px;">Agendar</a>
       </nav>
       <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -99,7 +99,7 @@
           Agende online em segundos e saia renovado.
         </p>
         <div class="hero-ctas">
-          <a href="#agendamento" class="btn btn-gold">✂ Agendar horário</a>
+          <a href="/agendar" class="btn btn-gold">✂ Agendar horário</a>
           <a href="#servicos" class="btn btn-outline">Ver serviços</a>
         </div>
         <div class="hero-divider">
@@ -181,7 +181,7 @@
 
       </div>
       <div style="text-align:center;margin-top:40px;">
-        <a href="#agendamento" class="btn btn-gold fade-in">Agendar agora</a>
+        <a href="/agendar" class="btn btn-gold fade-in">Agendar agora</a>
       </div>
     </div>
   </section>
@@ -362,40 +362,40 @@
     </div>
   </section>
 
-  <!-- SCHEDULING (CALENDLY) -->
+    <!-- SCHEDULING (NATIVE BOOKING) -->
   <section id="agendamento" aria-label="Agendamento online">
     <div class="container">
       <div class="scheduling-wrapper">
         <div class="scheduling-info fade-in">
-          <span class="section-tag">Reserve seu horário</span>
-          <h2 class="section-title">Agende Online</h2>
+          <span class="section-tag">Reserve seu hor&aacute;rio</span>
+          <h2 class="section-title">Agende no pr&oacute;prio site</h2>
           <p>
-            Nosso agendamento é rápido e sem complicação. Use o Calendly ao lado para escolher
-            o serviço, data e horário de preferência — tudo em menos de 2 minutos.
+            Nosso agendamento agora &eacute; nativo. Escolha o servi&ccedil;o, veja os hor&aacute;rios dispon&iacute;veis em
+            tempo real e confirme sua reserva sem sair do site.
           </p>
           <ul class="schedule-details">
-            <li><span class="icon">🕘</span> Seg a Sáb das 9h às 18h</li>
-            <li><span class="icon">📍</span> Natal / RN</li>
-            <li><span class="icon">📞</span> <a href="tel:+5584986197944" style="color:var(--cream);text-decoration:none;">(84) 98619-7944</a></li>
-            <li><span class="icon">⚠️</span> Cancelamentos com pelo menos 2h de antecedência</li>
+            <li><span class="icon">&#x1F558;</span> Seg a S&aacute;b das 9h &agrave;s 18h</li>
+            <li><span class="icon">&#x1F4CD;</span> Natal / RN</li>
+            <li><span class="icon">&#x1F4DE;</span> <a href="tel:+5584986197944" style="color:var(--cream);text-decoration:none;">(84) 98619-7944</a></li>
+            <li><span class="icon">&#x26A0;&#xFE0F;</span> Cancelamentos com pelo menos 2h de anteced&ecirc;ncia</li>
           </ul>
-          <div style="margin-top:28px;">
-            <a href="https://wa.me/5584986197944?text=Olá!%20Gostaria%20de%20agendar%20um%20horário." class="btn btn-whatsapp" target="_blank" rel="noopener">
-              💬 Agendar pelo WhatsApp
+          <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="/agendar" class="btn btn-gold">&#x2702; Abrir agenda completa</a>
+            <a href="https://wa.me/5584986197944?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20hor%C3%A1rio." class="btn btn-whatsapp" target="_blank" rel="noopener">
+              &#x1F4AC; Agendar pelo WhatsApp
             </a>
           </div>
         </div>
 
         <div class="fade-in">
-          <!-- CALENDLY EMBED — SUBSTITUA O SRC PELO SEU LINK -->
-                    <div class="calendly-embed" id="calendlyContainer" style="padding:0;background:transparent;border:none;min-height:650px;">
+          <div class="calendly-embed" id="calendlyContainer" style="padding:0;background:transparent;border:none;min-height:760px;overflow:hidden;">
             <iframe
-              src="https://calendly.com/plfernandes100"
+              src="/agendar?embedded=1"
               width="100%"
-              height="650"
+              height="760"
               frameborder="0"
-              style="border:none;border-radius:8px;display:block;"
-              title="Agendamento – Pedro Lucas Barbearia"
+              style="border:none;border-radius:8px;display:block;background:transparent;"
+              title="Agendamento &ndash; Pedro Lucas Barbearia"
             ></iframe>
           </div>
         </div>
@@ -618,7 +618,7 @@
             <span class="faq-icon" aria-hidden="true">+</span>
           </button>
           <div class="faq-answer" aria-hidden="true">
-            <p class="faq-answer-inner">Você pode agendar diretamente por essa página pelo Calendly ou chamar no WhatsApp: <a href="https://wa.me/5584986197944" style="color:var(--gold);">clique aqui</a>. É rápido e sem burocracia.</p>
+            <p class="faq-answer-inner">Você pode agendar diretamente por essa página, escolhendo serviço, data e horário, ou chamar no WhatsApp: <a href="https://wa.me/5584986197944" style="color:var(--gold);">clique aqui</a>. É rápido e sem burocracia.</p>
           </div>
         </div>
 
@@ -683,7 +683,7 @@
       <h2 class="section-title">Seu corte perfeito<br>está a um clique.</h2>
       <p>Reserve seu horário agora e saia renovado. Atendimento de segunda a sábado, das 9h às 18h.</p>
       <div class="cta-buttons">
-        <a href="#agendamento" class="btn btn-gold">✂ Agendar pelo Calendly</a>
+        <a href="/agendar" class="btn btn-gold">✂ Agendar pelo site</a>
         <a href="https://wa.me/5584986197944?text=Olá!%20Gostaria%20de%20agendar%20um%20horário." class="btn btn-whatsapp" target="_blank" rel="noopener">💬 Chamar no WhatsApp</a>
       </div>
     </div>

@@ -10,7 +10,7 @@ Configuracao aplicada:
 
 - Base directory: `web`
 - Build command: `npm run build`
-- Publish directory: `out`
+- Publish directory: `.next`
 - Node.js: `20`
 
 ## Como conectar no Netlify
@@ -21,13 +21,13 @@ Configuracao aplicada:
 4. Se precisar configurar manualmente, use:
    - Base directory: `web`
    - Build command: `npm run build`
-   - Publish directory: `out`
+   - Publish directory: `.next`
 5. Confirme que a branch de producao sera `main`.
 6. Salve e rode o primeiro deploy.
 
 ## Observacoes
 
-- O app esta configurado com `output: "export"` para gerar um deploy estatico em `out`, que hoje e o caminho mais estavel no Netlify para este projeto.
+- O app usa o adaptador do Next.js no Netlify para permitir `Route Handlers`, integracoes server-side e o fluxo de agendamento nativo.
 - A home do app em Next.js redireciona o usuario para `/legacy/index.html`, entao o deploy preserva a landing completa enquanto a migracao por secoes continua.
 - O projeto ainda nao usa variaveis de ambiente obrigatorias para build.
 - Se no futuro entrarmos com servicos externos, analytics ou APIs privadas, vale cadastrar as chaves em **Site configuration > Environment variables** no Netlify.

@@ -4,6 +4,8 @@
   --gold: #e8b923;
   --cream: #f4f0e4;
   --white: #fff;
+  --font-display: "Playfair Display", serif;
+  --font-body: "Raleway", sans-serif;
 }
 
 * {
@@ -14,13 +16,24 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: "Raleway", sans-serif;
+  font-family: var(--font-body);
   background: var(--green-deep);
   color: var(--cream);
 }
 
 a {
   color: inherit;
+}
+
+body {
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
 .container {

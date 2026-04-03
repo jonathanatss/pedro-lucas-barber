@@ -10,9 +10,14 @@
     "test": "echo \"No tests configured yet\" && exit 0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.101.1",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "googleapis": "^171.4.0",
     "next": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "latest",

@@ -21,5 +21,5 @@ npm run dev
 ## Próximos passos
 
 - Portar seções restantes da landing original
-- Integrar agendamento (Calendly) e FAQ
+- Integrar agendamento nativo, Google Calendar e FAQ
 - Adicionar testes de componentes e e2e
