@@ -22,5 +22,8 @@ Thumbs.db
 .env.local
 .env.*.local
 
+# Netlify
+.netlify/
+
 # Local portable runtimes
 tools/
