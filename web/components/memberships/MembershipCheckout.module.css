@@ -1,0 +1,182 @@
+.shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
+  gap: 24px;
+  align-items: start;
+}
+
+.planColumn {
+  display: grid;
+  gap: 14px;
+}
+
+.planButton {
+  width: 100%;
+  border: 1px solid rgba(232, 185, 35, 0.22);
+  border-radius: 8px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--cream);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.planButton:hover,
+.planButtonActive {
+  border-color: rgba(232, 185, 35, 0.72);
+  background: rgba(232, 185, 35, 0.1);
+  transform: translateY(-1px);
+}
+
+.planName,
+.planPrice,
+.planDescription {
+  display: block;
+}
+
+.planName {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.planPrice {
+  margin-top: 8px;
+  color: var(--gold);
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.planDescription {
+  margin-top: 10px;
+  line-height: 1.55;
+  opacity: 0.88;
+}
+
+.benefits {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.benefit {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 0.82rem;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.formPanel {
+  border: 1px solid rgba(232, 185, 35, 0.25);
+  border-radius: 8px;
+  padding: 24px;
+  background: rgba(15, 26, 15, 0.72);
+  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.16);
+}
+
+.panelHeader h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 2.1rem;
+  line-height: 1.08;
+}
+
+.panelHeader p {
+  margin: 12px 0 0;
+  line-height: 1.65;
+  opacity: 0.9;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 22px 0;
+  padding: 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.summary span {
+  opacity: 0.82;
+}
+
+.summary strong {
+  color: var(--gold);
+  text-align: right;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.field span {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.field input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  padding: 13px 14px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #182015;
+  outline: none;
+}
+
+.field input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(232, 185, 35, 0.18);
+}
+
+.submit {
+  border: 0;
+  border-radius: 8px;
+  padding: 14px 18px;
+  background: var(--gold);
+  color: var(--green-deep);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.submit:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.error {
+  border: 1px solid rgba(255, 101, 101, 0.45);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: rgba(255, 101, 101, 0.12);
+  color: #ffd4d4;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+}

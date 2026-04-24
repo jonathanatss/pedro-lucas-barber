@@ -226,6 +226,56 @@ select {
   background: rgba(255, 255, 255, 0.03);
 }
 
+.club-hero {
+  padding-bottom: 28px;
+  background:
+    linear-gradient(180deg, rgba(15, 26, 15, 0.94), rgba(43, 51, 32, 0.96)),
+    url("/legacy/IMG_6905.jpg.jpeg") center 32% / cover;
+}
+
+.club-heading {
+  max-width: 820px;
+}
+
+.club-section {
+  padding-top: 36px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0)),
+    var(--green-deep);
+}
+
+.back-link {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 22px;
+  color: var(--cream);
+  opacity: 0.86;
+  text-decoration: none;
+}
+
+.status-banner {
+  margin-top: 22px;
+  max-width: 680px;
+  border: 1px solid rgba(232, 185, 35, 0.34);
+  border-radius: 8px;
+  padding: 13px 16px;
+  background: rgba(232, 185, 35, 0.1);
+  line-height: 1.55;
+}
+
+.success-page {
+  min-height: calc(100vh - 72px);
+  display: grid;
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgba(15, 26, 15, 0.92), rgba(43, 51, 32, 0.96)),
+    url("/legacy/IMG_6915.jpg.jpeg") center / cover;
+}
+
+.success-panel {
+  max-width: 760px;
+}
+
 .footer {
   padding: 40px 0;
   border-top: 1px solid rgba(232, 185, 35, 0.2);

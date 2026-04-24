@@ -16,9 +16,9 @@ const highlights = [
       "Fluxo pensado para uma operacao real de barbearia, com dados centralizados e espaco para crescer.",
   },
   {
-    title: "Contato rapido",
+    title: "Clube mensal",
     description:
-      "Se preferir falar direto, o WhatsApp continua disponivel como canal de apoio.",
+      "Planos recorrentes com checkout seguro do Asaas e status sincronizado no Supabase.",
   },
 ];
 
@@ -41,6 +41,9 @@ export default function Home() {
               <div className="hero-actions">
                 <Link className="btn btn-primary" href="/agendar">
                   Abrir agenda
+                </Link>
+                <Link className="btn btn-ghost" href="/clube">
+                  Conhecer clube mensal
                 </Link>
                 <a
                   className="btn btn-ghost"

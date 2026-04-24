@@ -15,9 +15,10 @@ export function Header() {
           </span>
         </Link>
         <nav className="nav">
-          <a href="#servicos">Serviços</a>
-          <a href="#agendamento">Agendamento</a>
-          <a href="#contato">Contato</a>
+          <Link href="/#servicos">Serviços</Link>
+          <Link href="/clube">Clube mensal</Link>
+          <Link href="/#agendamento">Agendamento</Link>
+          <Link href="/#contato">Contato</Link>
         </nav>
       </div>
     </header>
