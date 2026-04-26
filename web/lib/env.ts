@@ -79,3 +79,12 @@ export const siteUrl = env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export function getGooglePrivateKey() {
   return env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, "\n");
 }
+
+export function getMissingSupabaseServiceCredentials() {
+  return [
+    ["NEXT_PUBLIC_SUPABASE_URL", env.NEXT_PUBLIC_SUPABASE_URL],
+    ["SUPABASE_SERVICE_ROLE_KEY", env.SUPABASE_SERVICE_ROLE_KEY],
+  ]
+    .filter(([, value]) => !value)
+    .map(([key]) => key);
+}

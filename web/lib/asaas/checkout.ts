@@ -6,7 +6,7 @@ import { AsaasApiError, asaasRequest } from "@/lib/asaas/client";
 import { getAsaasCheckoutUrl, getCheckoutCallbackUrl } from "@/lib/asaas/config";
 import { getMembershipPlanBySlug } from "@/lib/asaas/plans";
 import type { AsaasCheckoutResponse, CreateCheckoutResult } from "@/lib/asaas/types";
-import { bookingTimezone } from "@/lib/env";
+import { bookingTimezone, getMissingSupabaseServiceCredentials } from "@/lib/env";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 const checkoutInputSchema = z.object({
@@ -52,8 +52,12 @@ export async function createMembershipCheckout(rawInput: unknown): Promise<Creat
   const supabase = getSupabaseAdmin();
 
   if (!supabase) {
+    const missingCredentials = getMissingSupabaseServiceCredentials();
+
     throw new MembershipCheckoutError(
-      "As credenciais do Supabase ainda não foram configuradas.",
+      missingCredentials.length
+        ? `Credenciais do Supabase ausentes no runtime: ${missingCredentials.join(", ")}.`
+        : "As credenciais do Supabase ainda não foram configuradas.",
       503,
       "supabase_not_configured",
     );
