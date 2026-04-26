@@ -20,6 +20,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.15.9",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
