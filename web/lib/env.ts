@@ -38,19 +38,31 @@ function readOptionalEnv(value: string | undefined) {
   return trimmedValue;
 }
 
+function readOptionalSecret(value: string | undefined) {
+  const optionalValue = readOptionalEnv(value);
+
+  if (!optionalValue) {
+    return undefined;
+  }
+
+  const unquotedValue = optionalValue.replace(/^['"]|['"]$/g, "");
+
+  return unquotedValue.startsWith("\\$") ? `$${unquotedValue.slice(2)}` : unquotedValue;
+}
+
 export const env = envSchema.parse({
   NEXT_PUBLIC_SUPABASE_URL: readOptionalEnv(process.env.NEXT_PUBLIC_SUPABASE_URL),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: readOptionalEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
-  SUPABASE_SERVICE_ROLE_KEY: readOptionalEnv(process.env.SUPABASE_SERVICE_ROLE_KEY),
+  SUPABASE_SERVICE_ROLE_KEY: readOptionalSecret(process.env.SUPABASE_SERVICE_ROLE_KEY),
   GOOGLE_CALENDAR_ID: readOptionalEnv(process.env.GOOGLE_CALENDAR_ID),
   GOOGLE_SERVICE_ACCOUNT_EMAIL: readOptionalEnv(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL),
-  GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: readOptionalEnv(
+  GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: readOptionalSecret(
     process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY,
   ),
   BOOKING_TIMEZONE: readOptionalEnv(process.env.BOOKING_TIMEZONE),
-  ASAAS_API_KEY: readOptionalEnv(process.env.ASAAS_API_KEY),
+  ASAAS_API_KEY: readOptionalSecret(process.env.ASAAS_API_KEY),
   ASAAS_ENVIRONMENT: readOptionalEnv(process.env.ASAAS_ENVIRONMENT),
-  ASAAS_WEBHOOK_TOKEN: readOptionalEnv(process.env.ASAAS_WEBHOOK_TOKEN),
+  ASAAS_WEBHOOK_TOKEN: readOptionalSecret(process.env.ASAAS_WEBHOOK_TOKEN),
   NEXT_PUBLIC_SITE_URL: readOptionalEnv(process.env.NEXT_PUBLIC_SITE_URL),
 });
 
