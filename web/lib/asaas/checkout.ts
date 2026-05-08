@@ -47,6 +47,26 @@ function getCustomerData(input: CheckoutInput) {
   };
 }
 
+function getMembershipInsertErrorMessage(errorCode?: string) {
+  if (errorCode === "42P01") {
+    return "A tabela memberships ainda não existe no Supabase. Rode a migration do Asaas antes de testar.";
+  }
+
+  if (errorCode === "42703") {
+    return "O schema da tabela memberships está diferente do esperado. Rode novamente a migration do Asaas.";
+  }
+
+  if (errorCode === "23503") {
+    return "O plano selecionado não foi encontrado no Supabase. Verifique a tabela subscription_plans.";
+  }
+
+  if (errorCode === "23505") {
+    return "Já existe uma assinatura com a mesma referência externa. Tente novamente.";
+  }
+
+  return "Não foi possível preparar a assinatura agora. Verifique se a migration do Asaas foi executada no Supabase.";
+}
+
 export async function createMembershipCheckout(rawInput: unknown): Promise<CreateCheckoutResult> {
   const input = checkoutInputSchema.parse(rawInput);
   const supabase = getSupabaseAdmin();
@@ -90,7 +110,7 @@ export async function createMembershipCheckout(rawInput: unknown): Promise<Creat
 
   if (insertResult.error) {
     throw new MembershipCheckoutError(
-      "Não foi possível preparar a assinatura agora.",
+      getMembershipInsertErrorMessage(insertResult.error.code),
       500,
       "membership_insert_failed",
     );
