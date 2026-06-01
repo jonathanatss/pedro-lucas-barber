@@ -5,6 +5,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getAvailabilityForDate } from "@/lib/booking/availability";
 import { getBookingCatalog } from "@/lib/booking/catalog";
 import { addMinutesSafe, buildUtcDate, isIsoDateString, isTimeString } from "@/lib/booking/time";
+import { getMissingSupabaseServiceCredentials } from "@/lib/env";
 
 const appointmentInputSchema = z.object({
   customerEmail: z.string().email().optional().or(z.literal("")),
@@ -26,13 +27,37 @@ export class BookingError extends Error {
   }
 }
 
+function getAppointmentInsertErrorMessage(errorCode?: string) {
+  if (errorCode === "42P01") {
+    return "A tabela appointments ainda não existe no Supabase. Rode a migration de agendamento antes de testar.";
+  }
+
+  if (errorCode === "42703") {
+    return "O schema da tabela appointments está diferente do esperado. Rode novamente a migration de agendamento.";
+  }
+
+  if (errorCode === "23503") {
+    return "O serviço selecionado não foi encontrado no Supabase. Verifique a tabela services.";
+  }
+
+  if (errorCode === "23P01" || errorCode === "23505") {
+    return "Outro cliente acabou de reservar este horário. Escolha um novo horário para continuar.";
+  }
+
+  return "Não foi possível confirmar o agendamento agora. Verifique se a migration de agendamento foi executada no Supabase.";
+}
+
 export async function createAppointment(rawInput: unknown) {
   const input = appointmentInputSchema.parse(rawInput);
   const supabase = getSupabaseAdmin();
 
   if (!supabase) {
+    const missingCredentials = getMissingSupabaseServiceCredentials();
+
     throw new BookingError(
-      "As credenciais do Supabase ainda não foram configuradas.",
+      missingCredentials.length
+        ? `Credenciais do Supabase ausentes no runtime: ${missingCredentials.join(", ")}.`
+        : "As credenciais do Supabase ainda não foram configuradas.",
       503,
       "supabase_not_configured",
     );
@@ -82,18 +107,12 @@ export async function createAppointment(rawInput: unknown) {
     .single();
 
   if (insertResult.error) {
-    if (insertResult.error.code === "23P01" || insertResult.error.code === "23505") {
-      throw new BookingError(
-        "Outro cliente acabou de reservar este horário. Escolha um novo horário para continuar.",
-        409,
-        "slot_conflict",
-      );
-    }
+    const isSlotConflict = insertResult.error.code === "23P01" || insertResult.error.code === "23505";
 
     throw new BookingError(
-      "Não foi possível confirmar o agendamento agora.",
-      500,
-      "insert_failed",
+      getAppointmentInsertErrorMessage(insertResult.error.code),
+      isSlotConflict ? 409 : 500,
+      isSlotConflict ? "slot_conflict" : "insert_failed",
     );
   }
 
