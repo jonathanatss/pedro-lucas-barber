@@ -28,6 +28,10 @@ export class BookingError extends Error {
 }
 
 function getAppointmentInsertErrorMessage(errorCode?: string) {
+  if (errorCode === "42501") {
+    return "Permissão negada ao criar agendamento no Supabase. Verifique se SUPABASE_SERVICE_ROLE_KEY é a chave service_role e se está disponível para Functions na Netlify.";
+  }
+
   if (errorCode === "42P01") {
     return "A tabela appointments ainda não existe no Supabase. Rode a migration de agendamento antes de testar.";
   }
@@ -108,6 +112,13 @@ export async function createAppointment(rawInput: unknown) {
 
   if (insertResult.error) {
     const isSlotConflict = insertResult.error.code === "23P01" || insertResult.error.code === "23505";
+
+    console.error("appointment_insert_failed", {
+      code: insertResult.error.code,
+      details: insertResult.error.details,
+      hint: insertResult.error.hint,
+      message: insertResult.error.message,
+    });
 
     throw new BookingError(
       getAppointmentInsertErrorMessage(insertResult.error.code),
