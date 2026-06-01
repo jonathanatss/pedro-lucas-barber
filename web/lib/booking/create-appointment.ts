@@ -36,8 +36,8 @@ function getAppointmentInsertErrorMessage(errorCode?: string) {
     return "A tabela appointments ainda não existe no Supabase. Rode a migration de agendamento antes de testar.";
   }
 
-  if (errorCode === "42703") {
-    return "O schema da tabela appointments está diferente do esperado. Rode novamente a migration de agendamento.";
+  if (errorCode === "42703" || errorCode === "PGRST204") {
+    return "O schema da tabela appointments está diferente do esperado. Rode a migration de reparo do agendamento no Supabase.";
   }
 
   if (errorCode === "23503") {
