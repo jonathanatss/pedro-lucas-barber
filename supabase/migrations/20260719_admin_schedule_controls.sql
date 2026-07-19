@@ -9,6 +9,12 @@ create table if not exists public.business_hours (
   updated_at timestamptz not null default now()
 );
 
+alter table public.business_hours
+  add column if not exists weekday integer;
+
+create unique index if not exists business_hours_weekday_unique_idx
+  on public.business_hours (weekday);
+
 create table if not exists public.blocked_periods (
   id uuid primary key default gen_random_uuid(),
   starts_at timestamptz not null,
@@ -39,6 +45,9 @@ create table if not exists public.business_day_overrides (
 );
 
 create index if not exists business_day_overrides_date_idx
+  on public.business_day_overrides (date);
+
+create unique index if not exists business_day_overrides_date_unique_idx
   on public.business_day_overrides (date);
 
 alter table public.business_hours

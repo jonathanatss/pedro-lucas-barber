@@ -16,6 +16,7 @@ create table if not exists public.services (
 );
 
 alter table public.services
+  add column if not exists id uuid default gen_random_uuid(),
   add column if not exists slug text,
   add column if not exists name text,
   add column if not exists description text not null default '',
@@ -27,6 +28,19 @@ alter table public.services
   add column if not exists active boolean not null default true,
   add column if not exists created_at timestamptz not null default now(),
   add column if not exists updated_at timestamptz not null default now();
+
+update public.services
+set id = gen_random_uuid()
+where id is null;
+
+alter table public.services
+  alter column id set default gen_random_uuid();
+
+create unique index if not exists services_slug_unique_idx
+  on public.services (slug);
+
+create unique index if not exists services_id_unique_idx
+  on public.services (id);
 
 insert into public.services (
   slug,
@@ -67,11 +81,15 @@ create table if not exists public.business_hours (
 );
 
 alter table public.business_hours
+  add column if not exists weekday integer,
   add column if not exists opens_at text not null default '09:00',
   add column if not exists closes_at text not null default '18:00',
   add column if not exists is_closed boolean not null default false,
   add column if not exists created_at timestamptz not null default now(),
   add column if not exists updated_at timestamptz not null default now();
+
+create unique index if not exists business_hours_weekday_unique_idx
+  on public.business_hours (weekday);
 
 insert into public.business_hours (weekday, opens_at, closes_at, is_closed)
 values
@@ -208,6 +226,9 @@ create table if not exists public.business_day_overrides (
 );
 
 create index if not exists business_day_overrides_date_idx
+  on public.business_day_overrides (date);
+
+create unique index if not exists business_day_overrides_date_unique_idx
   on public.business_day_overrides (date);
 
 notify pgrst, 'reload schema';
