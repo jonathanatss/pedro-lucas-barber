@@ -36,11 +36,47 @@ where id is null;
 alter table public.services
   alter column id set default gen_random_uuid();
 
+delete from public.services duplicated
+using public.services kept
+where duplicated.slug = kept.slug
+  and duplicated.ctid > kept.ctid;
+
 create unique index if not exists services_slug_unique_idx
   on public.services (slug);
 
 create unique index if not exists services_id_unique_idx
   on public.services (id);
+
+update public.services
+set
+  name = service_seed.name,
+  description = service_seed.description,
+  duration_minutes = service_seed.duration_minutes,
+  buffer_before_minutes = service_seed.buffer_before_minutes,
+  buffer_after_minutes = service_seed.buffer_after_minutes,
+  price_label = service_seed.price_label,
+  sort_order = service_seed.sort_order,
+  active = service_seed.active,
+  updated_at = now()
+from (
+  values
+    ('corte-de-cabelo', 'Corte de Cabelo', 'Corte personalizado com acabamento profissional.', 40, 0, 5, 'R$ 35', 1, true),
+    ('barba', 'Barba', 'Design, aparagem e hidratacao da barba.', 30, 0, 5, 'R$ 30', 2, true),
+    ('combo-completo', 'Combo Completo', 'Corte + barba com todo o cuidado da casa.', 70, 0, 10, 'R$ 60', 3, true),
+    ('sobrancelha', 'Sobrancelha', 'Design e alinhamento de sobrancelha.', 10, 0, 5, 'R$ 10', 4, true),
+    ('pezinho', 'Pezinho', 'Acabamento da nuca e contorno inferior do corte.', 10, 0, 5, 'R$ 10', 5, true)
+) as service_seed (
+  slug,
+  name,
+  description,
+  duration_minutes,
+  buffer_before_minutes,
+  buffer_after_minutes,
+  price_label,
+  sort_order,
+  active
+)
+where public.services.slug = service_seed.slug;
 
 insert into public.services (
   slug,
@@ -53,23 +89,30 @@ insert into public.services (
   sort_order,
   active
 )
-values
-  ('corte-de-cabelo', 'Corte de Cabelo', 'Corte personalizado com acabamento profissional.', 40, 0, 5, 'R$ 35', 1, true),
-  ('barba', 'Barba', 'Design, aparagem e hidratacao da barba.', 30, 0, 5, 'R$ 30', 2, true),
-  ('combo-completo', 'Combo Completo', 'Corte + barba com todo o cuidado da casa.', 70, 0, 10, 'R$ 60', 3, true),
-  ('sobrancelha', 'Sobrancelha', 'Design e alinhamento de sobrancelha.', 10, 0, 5, 'R$ 10', 4, true),
-  ('pezinho', 'Pezinho', 'Acabamento da nuca e contorno inferior do corte.', 10, 0, 5, 'R$ 10', 5, true)
-on conflict (slug) do update
-set
-  name = excluded.name,
-  description = excluded.description,
-  duration_minutes = excluded.duration_minutes,
-  buffer_before_minutes = excluded.buffer_before_minutes,
-  buffer_after_minutes = excluded.buffer_after_minutes,
-  price_label = excluded.price_label,
-  sort_order = excluded.sort_order,
-  active = excluded.active,
-  updated_at = now();
+select *
+from (
+  values
+    ('corte-de-cabelo', 'Corte de Cabelo', 'Corte personalizado com acabamento profissional.', 40, 0, 5, 'R$ 35', 1, true),
+    ('barba', 'Barba', 'Design, aparagem e hidratacao da barba.', 30, 0, 5, 'R$ 30', 2, true),
+    ('combo-completo', 'Combo Completo', 'Corte + barba com todo o cuidado da casa.', 70, 0, 10, 'R$ 60', 3, true),
+    ('sobrancelha', 'Sobrancelha', 'Design e alinhamento de sobrancelha.', 10, 0, 5, 'R$ 10', 4, true),
+    ('pezinho', 'Pezinho', 'Acabamento da nuca e contorno inferior do corte.', 10, 0, 5, 'R$ 10', 5, true)
+) as service_seed (
+  slug,
+  name,
+  description,
+  duration_minutes,
+  buffer_before_minutes,
+  buffer_after_minutes,
+  price_label,
+  sort_order,
+  active
+)
+where not exists (
+  select 1
+  from public.services
+  where public.services.slug = service_seed.slug
+);
 
 create table if not exists public.business_hours (
   weekday integer primary key check (weekday between 0 and 6),
@@ -88,24 +131,49 @@ alter table public.business_hours
   add column if not exists created_at timestamptz not null default now(),
   add column if not exists updated_at timestamptz not null default now();
 
+delete from public.business_hours duplicated
+using public.business_hours kept
+where duplicated.weekday = kept.weekday
+  and duplicated.ctid > kept.ctid;
+
 create unique index if not exists business_hours_weekday_unique_idx
   on public.business_hours (weekday);
 
-insert into public.business_hours (weekday, opens_at, closes_at, is_closed)
-values
-  (0, '09:00', '18:00', true),
-  (1, '09:00', '18:00', false),
-  (2, '09:00', '18:00', false),
-  (3, '09:00', '18:00', false),
-  (4, '09:00', '18:00', false),
-  (5, '09:00', '18:00', false),
-  (6, '09:00', '18:00', false)
-on conflict (weekday) do update
+update public.business_hours
 set
-  opens_at = excluded.opens_at,
-  closes_at = excluded.closes_at,
-  is_closed = excluded.is_closed,
-  updated_at = now();
+  opens_at = hour_seed.opens_at,
+  closes_at = hour_seed.closes_at,
+  is_closed = hour_seed.is_closed,
+  updated_at = now()
+from (
+  values
+    (0, '09:00', '18:00', true),
+    (1, '09:00', '18:00', false),
+    (2, '09:00', '18:00', false),
+    (3, '09:00', '18:00', false),
+    (4, '09:00', '18:00', false),
+    (5, '09:00', '18:00', false),
+    (6, '09:00', '18:00', false)
+) as hour_seed (weekday, opens_at, closes_at, is_closed)
+where public.business_hours.weekday = hour_seed.weekday;
+
+insert into public.business_hours (weekday, opens_at, closes_at, is_closed)
+select *
+from (
+  values
+    (0, '09:00', '18:00', true),
+    (1, '09:00', '18:00', false),
+    (2, '09:00', '18:00', false),
+    (3, '09:00', '18:00', false),
+    (4, '09:00', '18:00', false),
+    (5, '09:00', '18:00', false),
+    (6, '09:00', '18:00', false)
+) as hour_seed (weekday, opens_at, closes_at, is_closed)
+where not exists (
+  select 1
+  from public.business_hours
+  where public.business_hours.weekday = hour_seed.weekday
+);
 
 create table if not exists public.blocked_periods (
   id uuid primary key default gen_random_uuid(),
@@ -131,7 +199,7 @@ create table if not exists public.appointments (
   customer_email text,
   notes text,
   status text not null default 'confirmed',
-  service_id uuid references public.services(id) on delete set null,
+  service_id uuid,
   service_name_snapshot text,
   service_slug_snapshot text,
   starts_at timestamptz,
@@ -224,6 +292,11 @@ create table if not exists public.business_day_overrides (
     )
   )
 );
+
+delete from public.business_day_overrides duplicated
+using public.business_day_overrides kept
+where duplicated.date = kept.date
+  and duplicated.ctid > kept.ctid;
 
 create index if not exists business_day_overrides_date_idx
   on public.business_day_overrides (date);
