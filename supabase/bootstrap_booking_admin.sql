@@ -29,6 +29,47 @@ alter table public.services
   add column if not exists created_at timestamptz not null default now(),
   add column if not exists updated_at timestamptz not null default now();
 
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'services'
+      and column_name = 'duration_min'
+  ) then
+    alter table public.services alter column duration_min set default 40;
+
+    update public.services
+    set duration_min = coalesce(duration_min, duration_minutes, 40)
+    where duration_min is null;
+  end if;
+
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'services'
+      and column_name = 'price_cents'
+  ) then
+    alter table public.services alter column price_cents set default 1000;
+
+    update public.services
+    set price_cents = coalesce(
+      price_cents,
+      case slug
+        when 'corte-de-cabelo' then 3500
+        when 'barba' then 3000
+        when 'combo-completo' then 6000
+        when 'sobrancelha' then 1000
+        when 'pezinho' then 1000
+        else 1000
+      end
+    )
+    where price_cents is null;
+  end if;
+end $$;
+
 update public.services
 set id = gen_random_uuid()
 where id is null;
@@ -113,6 +154,52 @@ where not exists (
   from public.services
   where public.services.slug = service_seed.slug
 );
+
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'services'
+      and column_name = 'duration_min'
+  ) then
+    update public.services
+    set duration_min = duration_minutes
+    where slug in (
+      'corte-de-cabelo',
+      'barba',
+      'combo-completo',
+      'sobrancelha',
+      'pezinho'
+    );
+  end if;
+
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'services'
+      and column_name = 'price_cents'
+  ) then
+    update public.services
+    set price_cents = case slug
+      when 'corte-de-cabelo' then 3500
+      when 'barba' then 3000
+      when 'combo-completo' then 6000
+      when 'sobrancelha' then 1000
+      when 'pezinho' then 1000
+      else price_cents
+    end
+    where slug in (
+      'corte-de-cabelo',
+      'barba',
+      'combo-completo',
+      'sobrancelha',
+      'pezinho'
+    );
+  end if;
+end $$;
 
 create table if not exists public.business_hours (
   weekday integer primary key check (weekday between 0 and 6),
