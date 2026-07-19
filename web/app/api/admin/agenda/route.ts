@@ -39,6 +39,8 @@ type BlockedPeriodRow = {
 };
 
 type AppointmentRow = {
+  barber_whatsapp_provider: string | null;
+  barber_whatsapp_status: string;
   customer_email: string | null;
   customer_name: string;
   customer_phone: string;
@@ -188,6 +190,8 @@ function mapBlockedPeriod(row: BlockedPeriodRow) {
 
 function mapAppointment(row: AppointmentRow) {
   return {
+    barberWhatsappProvider: row.barber_whatsapp_provider,
+    barberWhatsappStatus: row.barber_whatsapp_status,
     customerEmail: row.customer_email,
     customerName: row.customer_name,
     customerPhone: row.customer_phone,
@@ -232,7 +236,7 @@ async function readAgenda() {
     supabase
       .from("appointments")
       .select(
-        "id, customer_name, customer_phone, customer_email, notes, service_name_snapshot, starts_at, ends_at, status",
+        "id, customer_name, customer_phone, customer_email, notes, service_name_snapshot, starts_at, ends_at, status, barber_whatsapp_status, barber_whatsapp_provider",
       )
       .in("status", ["confirmed", "pending_sync"])
       .gte("starts_at", windowStart)

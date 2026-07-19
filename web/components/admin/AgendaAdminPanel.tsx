@@ -28,6 +28,8 @@ type BlockedPeriod = {
 };
 
 type Appointment = {
+  barberWhatsappProvider: string | null;
+  barberWhatsappStatus: string;
   customerEmail: string | null;
   customerName: string;
   customerPhone: string;
@@ -101,6 +103,18 @@ function formatDateTime(value: string, timezone: string) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
+}
+
+function getWhatsAppStatusLabel(status: string) {
+  if (status === "sent") {
+    return "WhatsApp enviado";
+  }
+
+  if (status === "failed") {
+    return "WhatsApp falhou";
+  }
+
+  return "WhatsApp nao configurado";
 }
 
 async function readJsonResponse<T>(response: Response): Promise<T> {
@@ -710,6 +724,17 @@ export default function AgendaAdminPanel() {
                       {appointment.serviceName} · {appointment.customerName}
                     </p>
                     <p>{appointment.customerPhone}</p>
+                    <span
+                      className={`${styles.notificationPill} ${
+                        appointment.barberWhatsappStatus === "sent"
+                          ? styles.notificationPillSent
+                          : appointment.barberWhatsappStatus === "failed"
+                            ? styles.notificationPillFailed
+                            : ""
+                      }`.trim()}
+                    >
+                      {getWhatsAppStatusLabel(appointment.barberWhatsappStatus)}
+                    </span>
                   </div>
                   <span className={styles.statusPill}>{appointment.status}</span>
                 </article>

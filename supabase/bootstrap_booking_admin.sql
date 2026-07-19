@@ -301,6 +301,11 @@ create table if not exists public.appointments (
   buffer_before_minutes integer not null default 0,
   buffer_after_minutes integer not null default 0,
   google_event_id text,
+  barber_whatsapp_status text not null default 'not_configured',
+  barber_whatsapp_provider text,
+  barber_whatsapp_message_id text,
+  barber_whatsapp_notified_at timestamptz,
+  barber_whatsapp_error text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -321,6 +326,11 @@ alter table public.appointments
   add column if not exists buffer_before_minutes integer not null default 0,
   add column if not exists buffer_after_minutes integer not null default 0,
   add column if not exists google_event_id text,
+  add column if not exists barber_whatsapp_status text not null default 'not_configured',
+  add column if not exists barber_whatsapp_provider text,
+  add column if not exists barber_whatsapp_message_id text,
+  add column if not exists barber_whatsapp_notified_at timestamptz,
+  add column if not exists barber_whatsapp_error text,
   add column if not exists created_at timestamptz not null default now(),
   add column if not exists updated_at timestamptz not null default now();
 
@@ -364,6 +374,7 @@ set
   service_duration_minutes = coalesce(service_duration_minutes, 40),
   buffer_before_minutes = coalesce(buffer_before_minutes, 0),
   buffer_after_minutes = coalesce(buffer_after_minutes, 0),
+  barber_whatsapp_status = coalesce(barber_whatsapp_status, 'not_configured'),
   created_at = coalesce(created_at, now()),
   updated_at = coalesce(updated_at, now());
 
@@ -373,6 +384,13 @@ alter table public.appointments
 alter table public.appointments
   add constraint appointments_status_check
   check (status in ('confirmed', 'pending_sync', 'cancelled'));
+
+alter table public.appointments
+  drop constraint if exists appointments_barber_whatsapp_status_check;
+
+alter table public.appointments
+  add constraint appointments_barber_whatsapp_status_check
+  check (barber_whatsapp_status in ('not_configured', 'sent', 'failed'));
 
 alter table public.appointments
   drop constraint if exists appointments_starts_before_ends;

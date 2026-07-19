@@ -5,6 +5,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getAvailabilityForDate } from "@/lib/booking/availability";
 import { getBookingCatalog } from "@/lib/booking/catalog";
 import { addMinutesSafe, buildUtcDate, isIsoDateString, isTimeString } from "@/lib/booking/time";
+import { notifyBarberOnWhatsApp } from "@/lib/booking/whatsapp-notification";
 import { getMissingSupabaseServiceCredentials } from "@/lib/env";
 
 const appointmentInputSchema = z.object({
@@ -148,13 +149,56 @@ export async function createAppointment(rawInput: unknown) {
     syncStatus = "pending_sync";
   }
 
-  await supabase
+  const calendarSyncResult = await supabase
     .from("appointments")
     .update({
       google_event_id: googleEventId,
       status: syncStatus,
     })
     .eq("id", insertResult.data.id);
+
+  if (calendarSyncResult.error) {
+    console.error("appointment_calendar_status_update_failed", {
+      code: calendarSyncResult.error.code,
+      details: calendarSyncResult.error.details,
+      hint: calendarSyncResult.error.hint,
+      message: calendarSyncResult.error.message,
+    });
+  }
+
+  const whatsappNotification = await notifyBarberOnWhatsApp({
+    appointmentId: insertResult.data.id,
+    customerEmail: input.customerEmail || null,
+    customerName: input.customerName,
+    customerPhone: input.customerPhone,
+    end: occupiedEnd,
+    googleEventId,
+    notes: input.notes || null,
+    serviceName: service.name,
+    start: customerStart,
+    syncStatus,
+    timezone: catalog.timezone,
+  });
+
+  const whatsappStatusUpdateResult = await supabase
+    .from("appointments")
+    .update({
+      barber_whatsapp_error: whatsappNotification.error ?? null,
+      barber_whatsapp_message_id: whatsappNotification.messageId ?? null,
+      barber_whatsapp_notified_at: whatsappNotification.sentAt ?? null,
+      barber_whatsapp_provider: whatsappNotification.provider,
+      barber_whatsapp_status: whatsappNotification.status,
+    })
+    .eq("id", insertResult.data.id);
+
+  if (whatsappStatusUpdateResult.error) {
+    console.error("appointment_whatsapp_status_update_failed", {
+      code: whatsappStatusUpdateResult.error.code,
+      details: whatsappStatusUpdateResult.error.details,
+      hint: whatsappStatusUpdateResult.error.hint,
+      message: whatsappStatusUpdateResult.error.message,
+    });
+  }
 
   return {
     appointmentId: insertResult.data.id,
@@ -164,5 +208,6 @@ export async function createAppointment(rawInput: unknown) {
     end: serviceEnd.toISOString(),
     syncStatus,
     timezone: catalog.timezone,
+    whatsappNotificationStatus: whatsappNotification.status,
   };
 }

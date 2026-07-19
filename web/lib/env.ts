@@ -14,6 +14,14 @@ const envSchema = z.object({
   NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
   ADMIN_PASSWORD: z.string().min(8).optional(),
   ADMIN_SESSION_SECRET: z.string().min(16).optional(),
+  WHATSAPP_BARBER_PHONE: z.string().min(10).optional(),
+  WHATSAPP_NOTIFICATION_WEBHOOK_URL: z.string().url().optional(),
+  WHATSAPP_NOTIFICATION_WEBHOOK_TOKEN: z.string().min(1).optional(),
+  WHATSAPP_CLOUD_API_TOKEN: z.string().min(1).optional(),
+  WHATSAPP_CLOUD_PHONE_NUMBER_ID: z.string().min(1).optional(),
+  WHATSAPP_CLOUD_API_VERSION: z.string().min(1).optional(),
+  WHATSAPP_CLOUD_TEMPLATE_NAME: z.string().min(1).optional(),
+  WHATSAPP_CLOUD_TEMPLATE_LANGUAGE: z.string().min(2).optional(),
 });
 
 const placeholderPatterns = [
@@ -68,6 +76,22 @@ export const env = envSchema.parse({
   NEXT_PUBLIC_SITE_URL: readOptionalEnv(process.env.NEXT_PUBLIC_SITE_URL),
   ADMIN_PASSWORD: readOptionalSecret(process.env.ADMIN_PASSWORD),
   ADMIN_SESSION_SECRET: readOptionalSecret(process.env.ADMIN_SESSION_SECRET),
+  WHATSAPP_BARBER_PHONE: readOptionalEnv(process.env.WHATSAPP_BARBER_PHONE),
+  WHATSAPP_NOTIFICATION_WEBHOOK_URL: readOptionalEnv(
+    process.env.WHATSAPP_NOTIFICATION_WEBHOOK_URL,
+  ),
+  WHATSAPP_NOTIFICATION_WEBHOOK_TOKEN: readOptionalSecret(
+    process.env.WHATSAPP_NOTIFICATION_WEBHOOK_TOKEN,
+  ),
+  WHATSAPP_CLOUD_API_TOKEN: readOptionalSecret(process.env.WHATSAPP_CLOUD_API_TOKEN),
+  WHATSAPP_CLOUD_PHONE_NUMBER_ID: readOptionalEnv(
+    process.env.WHATSAPP_CLOUD_PHONE_NUMBER_ID,
+  ),
+  WHATSAPP_CLOUD_API_VERSION: readOptionalEnv(process.env.WHATSAPP_CLOUD_API_VERSION),
+  WHATSAPP_CLOUD_TEMPLATE_NAME: readOptionalEnv(process.env.WHATSAPP_CLOUD_TEMPLATE_NAME),
+  WHATSAPP_CLOUD_TEMPLATE_LANGUAGE: readOptionalEnv(
+    process.env.WHATSAPP_CLOUD_TEMPLATE_LANGUAGE,
+  ),
 });
 
 export const bookingTimezone = env.BOOKING_TIMEZONE ?? "America/Sao_Paulo";
@@ -93,6 +117,16 @@ export const hasAsaasCredentials = Boolean(env.ASAAS_API_KEY);
 export const siteUrl = env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const hasAdminPassword = Boolean(env.ADMIN_PASSWORD);
+
+export const hasWhatsAppWebhookCredentials = Boolean(
+  env.WHATSAPP_BARBER_PHONE && env.WHATSAPP_NOTIFICATION_WEBHOOK_URL,
+);
+
+export const hasWhatsAppCloudCredentials = Boolean(
+  env.WHATSAPP_BARBER_PHONE &&
+    env.WHATSAPP_CLOUD_API_TOKEN &&
+    env.WHATSAPP_CLOUD_PHONE_NUMBER_ID,
+);
 
 export function getGooglePrivateKey() {
   return env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, "\n");
