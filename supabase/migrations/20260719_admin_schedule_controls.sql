@@ -1,3 +1,24 @@
+create extension if not exists btree_gist;
+
+create table if not exists public.business_hours (
+  weekday integer primary key check (weekday between 0 and 6),
+  opens_at text not null default '09:00',
+  closes_at text not null default '18:00',
+  is_closed boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.blocked_periods (
+  id uuid primary key default gen_random_uuid(),
+  starts_at timestamptz not null,
+  ends_at timestamptz not null,
+  reason text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  check (starts_at < ends_at)
+);
+
 create table if not exists public.business_day_overrides (
   id uuid primary key default gen_random_uuid(),
   date date not null unique,
