@@ -18,6 +18,15 @@ export type BusinessHour = {
   weekday: number;
 };
 
+export type BusinessDayOverride = {
+  closesAt: string;
+  date: string;
+  id: string;
+  isClosed: boolean;
+  opensAt: string;
+  reason?: string | null;
+};
+
 export type BusyRange = {
   end: Date;
   source: "appointment" | "blocked" | "google";

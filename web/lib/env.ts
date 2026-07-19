@@ -12,6 +12,8 @@ const envSchema = z.object({
   ASAAS_ENVIRONMENT: z.enum(["sandbox", "production"]).optional(),
   ASAAS_WEBHOOK_TOKEN: z.string().min(32).optional(),
   NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
+  ADMIN_PASSWORD: z.string().min(8).optional(),
+  ADMIN_SESSION_SECRET: z.string().min(16).optional(),
 });
 
 const placeholderPatterns = [
@@ -64,6 +66,8 @@ export const env = envSchema.parse({
   ASAAS_ENVIRONMENT: readOptionalEnv(process.env.ASAAS_ENVIRONMENT),
   ASAAS_WEBHOOK_TOKEN: readOptionalSecret(process.env.ASAAS_WEBHOOK_TOKEN),
   NEXT_PUBLIC_SITE_URL: readOptionalEnv(process.env.NEXT_PUBLIC_SITE_URL),
+  ADMIN_PASSWORD: readOptionalSecret(process.env.ADMIN_PASSWORD),
+  ADMIN_SESSION_SECRET: readOptionalSecret(process.env.ADMIN_SESSION_SECRET),
 });
 
 export const bookingTimezone = env.BOOKING_TIMEZONE ?? "America/Sao_Paulo";
@@ -87,6 +91,8 @@ export const asaasEnvironment = env.ASAAS_ENVIRONMENT ?? "sandbox";
 export const hasAsaasCredentials = Boolean(env.ASAAS_API_KEY);
 
 export const siteUrl = env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+export const hasAdminPassword = Boolean(env.ADMIN_PASSWORD);
 
 export function getGooglePrivateKey() {
   return env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, "\n");

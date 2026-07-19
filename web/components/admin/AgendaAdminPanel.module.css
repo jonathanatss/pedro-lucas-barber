@@ -1,0 +1,293 @@
+.shell {
+  min-height: 100vh;
+  padding: 40px min(5vw, 56px) 72px;
+  background:
+    radial-gradient(circle at top left, rgba(232, 185, 35, 0.16), transparent 26%),
+    linear-gradient(145deg, #111b10, #28321f 56%, #172213);
+  color: var(--cream);
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin: 0 auto 24px;
+  max-width: 1280px;
+}
+
+.heroActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  max-width: 760px;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 4.8rem);
+  line-height: 0.94;
+}
+
+.lead,
+.copy {
+  max-width: 70ch;
+  color: rgba(244, 240, 228, 0.76);
+  line-height: 1.65;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+  gap: 22px;
+  max-width: 1280px;
+  margin: 0 auto 22px;
+}
+
+.card {
+  border: 1px solid rgba(232, 185, 35, 0.18);
+  border-radius: 26px;
+  padding: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(232, 185, 35, 0.12), transparent 32%),
+    rgba(13, 22, 13, 0.88);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.24);
+}
+
+.loginCard {
+  max-width: 560px;
+  margin: 10vh auto 0;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.cardTitle {
+  margin: 0 0 10px;
+  font-size: 1.35rem;
+}
+
+.loginForm,
+.formGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.label {
+  display: grid;
+  gap: 8px;
+  color: rgba(244, 240, 228, 0.88);
+  font-weight: 800;
+}
+
+.input,
+.timeInput {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--cream);
+}
+
+.input:disabled,
+.timeInput:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.twoColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.weekList {
+  display: grid;
+  gap: 10px;
+}
+
+.weekRow {
+  display: grid;
+  grid-template-columns: 110px 110px minmax(100px, 1fr) 32px minmax(100px, 1fr);
+  gap: 10px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.checkLabel {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: rgba(244, 240, 228, 0.78);
+  font-weight: 800;
+}
+
+.toText {
+  color: rgba(244, 240, 228, 0.56);
+  text-align: center;
+}
+
+.primaryButton,
+.secondaryButton,
+.ghostButton,
+.dangerButton {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #f0c043, #d5a015);
+  color: #162013;
+}
+
+.secondaryButton {
+  border: 1px solid rgba(232, 185, 35, 0.35);
+  background: rgba(232, 185, 35, 0.12);
+  color: var(--cream);
+}
+
+.ghostButton {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--cream);
+}
+
+.dangerButton {
+  border: 1px solid rgba(255, 109, 109, 0.34);
+  background: rgba(255, 109, 109, 0.1);
+  color: #ffd5d5;
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled,
+.ghostButton:disabled,
+.dangerButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.64;
+}
+
+.success,
+.error {
+  max-width: 1280px;
+  margin: 0 auto 18px;
+  border-radius: 18px;
+  padding: 14px 16px;
+  line-height: 1.55;
+}
+
+.success {
+  border: 1px solid rgba(93, 206, 140, 0.3);
+  background: rgba(93, 206, 140, 0.1);
+  color: #ddffe7;
+}
+
+.error {
+  border: 1px solid rgba(255, 109, 109, 0.32);
+  background: rgba(255, 109, 109, 0.1);
+  color: #ffd1d1;
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.listItem p {
+  margin: 4px 0 0;
+  color: rgba(244, 240, 228, 0.68);
+  line-height: 1.45;
+}
+
+.empty {
+  margin: 0;
+  color: rgba(244, 240, 228, 0.62);
+}
+
+.statusPill {
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: rgba(232, 185, 35, 0.12);
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+@media (max-width: 980px) {
+  .hero,
+  .cardHeader {
+    display: grid;
+  }
+
+  .heroActions {
+    justify-content: flex-start;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .weekRow {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .toText {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .shell {
+    padding: 28px 16px 56px;
+  }
+
+  .card {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .twoColumns,
+  .weekRow {
+    grid-template-columns: 1fr;
+  }
+
+  .listItem {
+    display: grid;
+  }
+}

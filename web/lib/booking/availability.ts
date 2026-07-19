@@ -3,11 +3,11 @@ import type { AvailabilityResult, BusyRange } from "@/lib/booking/types";
 import { getGoogleBusyRanges } from "@/lib/google-calendar";
 import { slotIntervalMinutes } from "@/lib/booking/config";
 import { getBookingCatalog } from "@/lib/booking/catalog";
+import { getEffectiveBusinessHourForDate } from "@/lib/booking/schedule";
 import {
   addMinutesSafe,
   buildUtcDate,
   formatTimeLabel,
-  getWeekdayForDate,
   isIsoDateString,
   minutesToTime,
   overlaps,
@@ -94,8 +94,7 @@ export async function getAvailabilityForDate(
     throw new Error("Serviço não encontrado.");
   }
 
-  const weekday = getWeekdayForDate(date, catalog.timezone);
-  const businessHour = catalog.businessHours.find((item) => item.weekday === weekday);
+  const businessHour = await getEffectiveBusinessHourForDate(date, catalog);
 
   if (!businessHour || businessHour.isClosed) {
     return {
