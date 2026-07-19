@@ -31,6 +31,12 @@ type BookingFormState = {
   notes: string;
 };
 
+type QuickDateOption = {
+  date: string;
+  label: string;
+  meta: string;
+};
+
 function getTodayInTimezone(timezone: string) {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: timezone,
@@ -47,6 +53,72 @@ function formatDateForHumans(value: string, timezone: string) {
     day: "2-digit",
     month: "long",
   }).format(new Date(`${value}T12:00:00`));
+}
+
+function formatShortDateForHumans(value: string, timezone: string) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: timezone,
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+  })
+    .format(new Date(`${value}T12:00:00`))
+    .replace(".", "");
+}
+
+function addDaysToIsoDate(value: string, days: number) {
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day + days, 12));
+
+  return date.toISOString().slice(0, 10);
+}
+
+function getWeekdayFromIsoDate(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+
+  return new Date(Date.UTC(year, month - 1, day, 12)).getUTCDay();
+}
+
+function getInitialBookingDate(timezone: string, businessHours: BusinessHour[]) {
+  const today = getTodayInTimezone(timezone);
+
+  for (let offset = 0; offset <= 14; offset += 1) {
+    const candidate = addDaysToIsoDate(today, offset);
+    const weekday = getWeekdayFromIsoDate(candidate);
+    const businessHour = businessHours.find((item) => item.weekday === weekday);
+
+    if (businessHour && !businessHour.isClosed) {
+      return candidate;
+    }
+  }
+
+  return today;
+}
+
+function buildQuickDateOptions(
+  timezone: string,
+  businessHours: BusinessHour[],
+): QuickDateOption[] {
+  const today = getTodayInTimezone(timezone);
+  const options: QuickDateOption[] = [];
+
+  for (let offset = 0; offset <= 14 && options.length < 7; offset += 1) {
+    const candidate = addDaysToIsoDate(today, offset);
+    const weekday = getWeekdayFromIsoDate(candidate);
+    const businessHour = businessHours.find((item) => item.weekday === weekday);
+
+    if (!businessHour || businessHour.isClosed) {
+      continue;
+    }
+
+    options.push({
+      date: candidate,
+      label: offset === 0 ? "Hoje" : offset === 1 ? "Amanhã" : formatShortDateForHumans(candidate, timezone),
+      meta: `${businessHour.opensAt} às ${businessHour.closesAt}`,
+    });
+  }
+
+  return options;
 }
 
 function formatDateTime(value: string, timezone: string) {
@@ -99,7 +171,9 @@ export default function BookingExperience({
   timezone,
 }: BookingExperienceProps) {
   const [selectedServiceSlug, setSelectedServiceSlug] = useState(services[0]?.slug ?? "");
-  const [selectedDate, setSelectedDate] = useState(getTodayInTimezone(timezone));
+  const [selectedDate, setSelectedDate] = useState(() =>
+    getInitialBookingDate(timezone, businessHours),
+  );
   const [availability, setAvailability] = useState<AvailabilityResult | null>(null);
   const [availabilityError, setAvailabilityError] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState("");
@@ -117,6 +191,11 @@ export default function BookingExperience({
   const selectedService = useMemo(
     () => services.find((service) => service.slug === selectedServiceSlug) ?? services[0] ?? null,
     [selectedServiceSlug, services],
+  );
+
+  const quickDateOptions = useMemo(
+    () => buildQuickDateOptions(timezone, businessHours),
+    [businessHours, timezone],
   );
 
   const manualFallbackHref = useMemo(() => {
@@ -309,6 +388,27 @@ export default function BookingExperience({
                 <span className={styles.helper}>
                   {formatDateForHumans(selectedDate, timezone)}
                 </span>
+              ) : null}
+              {quickDateOptions.length ? (
+                <div className={styles.quickDateGrid} aria-label="Datas rápidas">
+                  {quickDateOptions.map((option) => {
+                    const isSelected = selectedDate === option.date;
+
+                    return (
+                      <button
+                        key={option.date}
+                        type="button"
+                        className={`${styles.quickDateButton} ${
+                          isSelected ? styles.quickDateButtonSelected : ""
+                        }`.trim()}
+                        onClick={() => setSelectedDate(option.date)}
+                      >
+                        <span>{option.label}</span>
+                        <small>{option.meta}</small>
+                      </button>
+                    );
+                  })}
+                </div>
               ) : null}
             </div>
 
