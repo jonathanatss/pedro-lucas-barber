@@ -177,6 +177,39 @@ where id is null;
 alter table public.appointments
   alter column id set default gen_random_uuid();
 
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'appointments'
+      and column_name = 'start_time'
+  ) then
+    update public.appointments
+    set starts_at = coalesce(starts_at, start_time)
+    where starts_at is null
+      and start_time is not null;
+
+    execute 'alter table public.appointments alter column start_time drop not null';
+  end if;
+
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'appointments'
+      and column_name = 'end_time'
+  ) then
+    update public.appointments
+    set ends_at = coalesce(ends_at, end_time)
+    where ends_at is null
+      and end_time is not null;
+
+    execute 'alter table public.appointments alter column end_time drop not null';
+  end if;
+end $$;
+
 update public.appointments
 set
   status = coalesce(status, 'confirmed'),

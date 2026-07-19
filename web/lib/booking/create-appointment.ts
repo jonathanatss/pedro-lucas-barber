@@ -44,6 +44,10 @@ function getAppointmentInsertErrorMessage(errorCode?: string) {
     return "O serviço selecionado não foi encontrado no Supabase. Verifique a tabela services.";
   }
 
+  if (errorCode === "23502") {
+    return "Uma coluna obrigatoria legada ainda esta impedindo o agendamento. Verifique o schema da tabela appointments no Supabase.";
+  }
+
   if (errorCode === "23P01" || errorCode === "23505") {
     return "Outro cliente acabou de reservar este horário. Escolha um novo horário para continuar.";
   }
