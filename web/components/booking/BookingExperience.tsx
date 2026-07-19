@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { AvailabilityResult, BookingService, BusinessHour } from "@/lib/booking/types";
 
+import { siteContent } from "@/content/site";
+
 import styles from "./BookingExperience.module.css";
 
 type BookingExperienceProps = {
@@ -20,6 +22,13 @@ type AppointmentResponse = {
   start: string;
   syncStatus: "confirmed" | "pending_sync";
   timezone: string;
+};
+
+type BookingFormState = {
+  customerEmail: string;
+  customerName: string;
+  customerPhone: string;
+  notes: string;
 };
 
 function getTodayInTimezone(timezone: string) {
@@ -51,6 +60,38 @@ function formatDateTime(value: string, timezone: string) {
   }).format(new Date(value));
 }
 
+function buildManualBookingWhatsAppHref({
+  date,
+  form,
+  service,
+  time,
+  timezone,
+}: {
+  date: string;
+  form: BookingFormState;
+  service: BookingService;
+  time: string;
+  timezone: string;
+}) {
+  const dateLabel = formatDateForHumans(date, timezone);
+  const message = [
+    `Olá! Tentei agendar pelo site da ${siteContent.businessName}, mas a confirmação automática falhou.`,
+    "",
+    "Pode confirmar esse horário para mim?",
+    `Nome: ${form.customerName || "Não informado"}`,
+    `WhatsApp: ${form.customerPhone || "Não informado"}`,
+    form.customerEmail ? `E-mail: ${form.customerEmail}` : null,
+    `Serviço: ${service.name}`,
+    `Data: ${dateLabel}`,
+    `Horário: ${time}`,
+    form.notes ? `Observações: ${form.notes}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return `https://wa.me/${siteContent.whatsappNumber}?text=${encodeURIComponent(message)}`;
+}
+
 export default function BookingExperience({
   businessHours,
   embedded = false,
@@ -66,7 +107,7 @@ export default function BookingExperience({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<AppointmentResponse | null>(null);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<BookingFormState>({
     customerName: "",
     customerPhone: "",
     customerEmail: "",
@@ -77,6 +118,20 @@ export default function BookingExperience({
     () => services.find((service) => service.slug === selectedServiceSlug) ?? services[0] ?? null,
     [selectedServiceSlug, services],
   );
+
+  const manualFallbackHref = useMemo(() => {
+    if (!formError || !selectedService || !selectedDate || !selectedTime) {
+      return null;
+    }
+
+    return buildManualBookingWhatsAppHref({
+      date: selectedDate,
+      form,
+      service: selectedService,
+      time: selectedTime,
+      timezone,
+    });
+  }, [form, formError, selectedDate, selectedService, selectedTime, timezone]);
 
   useEffect(() => {
     if (!selectedServiceSlug || !selectedDate) {
@@ -355,7 +410,26 @@ export default function BookingExperience({
               />
             </div>
 
-            {formError ? <div className={`${styles.note} ${styles.error}`}>{formError}</div> : null}
+            {formError ? (
+              <div className={`${styles.note} ${styles.error}`}>
+                <p className={styles.noteText}>{formError}</p>
+                {manualFallbackHref ? (
+                  <div className={styles.manualFallbackActions}>
+                    <a
+                      className={styles.whatsappFallback}
+                      href={manualFallbackHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Enviar pedido pelo WhatsApp
+                    </a>
+                    <span className={styles.helper}>
+                      O pedido já vai com serviço, data, horário e seus dados preenchidos.
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
 
             {success ? (
               <div className={`${styles.note} ${styles.success}`}>
