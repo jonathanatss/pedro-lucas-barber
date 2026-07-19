@@ -62,6 +62,7 @@ export async function getBookingCatalog(): Promise<BookingCatalog> {
         "id, slug, name, description, duration_minutes, buffer_before_minutes, buffer_after_minutes, price_label, sort_order, active",
       )
       .eq("active", true)
+      .not("slug", "is", null)
       .order("sort_order", { ascending: true }),
     supabase
       .from("business_hours")

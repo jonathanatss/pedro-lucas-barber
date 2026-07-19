@@ -37,6 +37,11 @@ alter table public.services
   alter column id set default gen_random_uuid();
 
 update public.services
+set active = false,
+    updated_at = now()
+where slug is null;
+
+update public.services
 set
   description = coalesce(description, ''),
   duration_minutes = coalesce(duration_minutes, 40),
@@ -214,11 +219,7 @@ alter table public.appointments
 alter table public.appointments
   add constraint appointments_no_overlap
   exclude using gist (
-    tstzrange(
-      starts_at - make_interval(mins => buffer_before_minutes),
-      ends_at,
-      '[)'
-    ) with &&
+    tstzrange(starts_at, ends_at, '[)') with &&
   )
   where (
     status in ('confirmed', 'pending_sync')
