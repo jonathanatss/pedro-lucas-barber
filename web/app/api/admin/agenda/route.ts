@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { z, ZodError } from "zod";
 
-import { AdminAuthError, requireAdminAuthenticated } from "@/lib/admin-auth";
+import {
+  AdminAuthError,
+  requireAdminAuthenticated,
+  requireSupportAuthenticated,
+} from "@/lib/admin-auth";
 import { bookingTimezone } from "@/lib/env";
+import { deleteGoogleCalendarEvent } from "@/lib/google-calendar";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { buildUtcDate, isIsoDateString, isTimeString, timeToMinutes } from "@/lib/booking/time";
 
@@ -133,6 +138,10 @@ const agendaActionSchema = z.discriminatedUnion("type", [
   z.object({
     id: z.string().uuid(),
     type: z.literal("deleteBlock"),
+  }),
+  z.object({
+    id: z.string().uuid(),
+    type: z.literal("cancelAppointment"),
   }),
 ]);
 
@@ -421,6 +430,54 @@ export async function POST(request: Request) {
 
       if (result.error) {
         throw new AdminAgendaError(result.error.message, 500);
+      }
+    }
+
+    if (body.type === "cancelAppointment") {
+      const principal = await requireSupportAuthenticated();
+      const appointmentResult = await supabase
+        .from("appointments")
+        .select("id, google_event_id, status")
+        .eq("id", body.id)
+        .in("status", ["confirmed", "pending_sync"])
+        .maybeSingle();
+
+      if (appointmentResult.error) {
+        throw new AdminAgendaError(appointmentResult.error.message, 500);
+      }
+
+      if (!appointmentResult.data) {
+        throw new AdminAgendaError("Agendamento não encontrado ou já cancelado.", 404);
+      }
+
+      try {
+        await deleteGoogleCalendarEvent(appointmentResult.data.google_event_id);
+      } catch {
+        throw new AdminAgendaError(
+          "Não foi possível remover o evento do Google Calendar.",
+          502,
+        );
+      }
+
+      const result = await supabase
+        .from("appointments")
+        .update({
+          cancelled_at: new Date().toISOString(),
+          cancelled_by: principal.username,
+          status: "cancelled",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", body.id)
+        .in("status", ["confirmed", "pending_sync"])
+        .select("id")
+        .maybeSingle();
+
+      if (result.error) {
+        throw new AdminAgendaError(result.error.message, 500);
+      }
+
+      if (!result.data) {
+        throw new AdminAgendaError("Agendamento não encontrado ou já cancelado.", 404);
       }
     }
 

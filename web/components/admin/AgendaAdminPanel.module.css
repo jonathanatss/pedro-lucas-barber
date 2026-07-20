@@ -275,6 +275,12 @@
   font-weight: 900;
 }
 
+.appointmentActions {
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+}
+
 .notificationPill {
   display: inline-flex;
   width: fit-content;
@@ -337,5 +343,9 @@
 
   .listItem {
     display: grid;
+  }
+
+  .appointmentActions {
+    justify-items: start;
   }
 }

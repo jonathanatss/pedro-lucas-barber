@@ -106,3 +106,34 @@ export async function createGoogleCalendarEvent(input: CalendarEventInput) {
 
   return response.data.id ?? null;
 }
+
+export async function deleteGoogleCalendarEvent(eventId?: string | null) {
+  if (!eventId || !hasGoogleCalendarCredentials) {
+    return;
+  }
+
+  const calendar = getCalendarClient();
+
+  if (!calendar) {
+    return;
+  }
+
+  try {
+    await calendar.events.delete({
+      calendarId: env.GOOGLE_CALENDAR_ID!,
+      eventId,
+      sendUpdates: "none",
+    });
+  } catch (error) {
+    const status =
+      typeof error === "object" && error !== null && "code" in error
+        ? Number(error.code)
+        : null;
+
+    if (status === 404 || status === 410) {
+      return;
+    }
+
+    throw error;
+  }
+}

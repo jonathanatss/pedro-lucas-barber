@@ -901,7 +901,33 @@ export default function AgendaAdminPanel() {
                       {getWhatsAppStatusLabel(appointment.barberWhatsappStatus)}
                     </span>
                   </div>
-                  <span className={styles.statusPill}>{appointment.status}</span>
+                  <div className={styles.appointmentActions}>
+                    <span className={styles.statusPill}>{appointment.status}</span>
+                    {adminUser?.role === "support" ? (
+                      <button
+                        className={styles.dangerButton}
+                        disabled={isSaving}
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              `Cancelar o agendamento de ${appointment.customerName}? O horário ficará disponível novamente.`,
+                            )
+                          ) {
+                            void runAgendaAction(
+                              {
+                                id: appointment.id,
+                                type: "cancelAppointment",
+                              },
+                              "Agendamento cancelado e horário liberado.",
+                            );
+                          }
+                        }}
+                        type="button"
+                      >
+                        Remover
+                      </button>
+                    ) : null}
+                  </div>
                 </article>
               ))
             ) : (
