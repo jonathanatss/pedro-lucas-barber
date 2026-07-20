@@ -48,6 +48,18 @@
   line-height: 1.65;
 }
 
+.accountBadge {
+  display: inline-flex;
+  margin-top: 4px;
+  border: 1px solid rgba(232, 185, 35, 0.28);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: rgba(232, 185, 35, 0.1);
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
@@ -192,7 +204,8 @@
 }
 
 .success,
-.error {
+.error,
+.warning {
   max-width: 1280px;
   margin: 0 auto 18px;
   border-radius: 18px;
@@ -210,6 +223,19 @@
   border: 1px solid rgba(255, 109, 109, 0.32);
   background: rgba(255, 109, 109, 0.1);
   color: #ffd1d1;
+}
+
+.warning {
+  border: 1px solid rgba(240, 192, 67, 0.34);
+  background: rgba(240, 192, 67, 0.11);
+  color: #ffe9a6;
+}
+
+.passwordHint {
+  margin: -2px 0 0;
+  color: rgba(244, 240, 228, 0.6);
+  font-size: 0.86rem;
+  line-height: 1.5;
 }
 
 .list {
