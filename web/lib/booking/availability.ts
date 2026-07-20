@@ -1,7 +1,7 @@
 import type { AvailabilityResult, BusyRange } from "@/lib/booking/types";
 
 import { getGoogleBusyRanges } from "@/lib/google-calendar";
-import { slotIntervalMinutes } from "@/lib/booking/config";
+import { defaultBusinessBreaks, slotIntervalMinutes } from "@/lib/booking/config";
 import { getBookingCatalog } from "@/lib/booking/catalog";
 import { getEffectiveBusinessHourForDate } from "@/lib/booking/schedule";
 import {
@@ -100,6 +100,7 @@ export async function getAvailabilityForDate(
     return {
       date,
       timezone: catalog.timezone,
+      businessBreaks: catalog.businessBreaks,
       businessHours: catalog.businessHours,
       service,
       slots: [],
@@ -110,6 +111,11 @@ export async function getAvailabilityForDate(
   const businessClose = buildUtcDate(date, businessHour.closesAt, catalog.timezone);
 
   const busyRanges = [
+    ...defaultBusinessBreaks.map((businessBreak) => ({
+      start: buildUtcDate(date, businessBreak.startsAt, catalog.timezone),
+      end: buildUtcDate(date, businessBreak.endsAt, catalog.timezone),
+      source: "blocked" as const,
+    })),
     ...(await getBusyRangesFromSupabase(businessOpen, businessClose)),
     ...(await getGoogleBusyRanges(businessOpen, businessClose)),
   ];
@@ -156,6 +162,7 @@ export async function getAvailabilityForDate(
   return {
     date,
     timezone: catalog.timezone,
+    businessBreaks: catalog.businessBreaks,
     businessHours: catalog.businessHours,
     service,
     slots,

@@ -18,6 +18,12 @@ export type BusinessHour = {
   weekday: number;
 };
 
+export type BusinessBreak = {
+  endsAt: string;
+  reason: string;
+  startsAt: string;
+};
+
 export type BusinessDayOverride = {
   closesAt: string;
   date: string;
@@ -42,6 +48,7 @@ export type AvailableSlot = {
 };
 
 export type BookingCatalog = {
+  businessBreaks: BusinessBreak[];
   businessHours: BusinessHour[];
   source: "fallback" | "supabase";
   timezone: string;
@@ -49,6 +56,7 @@ export type BookingCatalog = {
 };
 
 export type AvailabilityResult = {
+  businessBreaks: BusinessBreak[];
   businessHours: BusinessHour[];
   date: string;
   service: BookingService;

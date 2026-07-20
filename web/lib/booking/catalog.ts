@@ -1,6 +1,6 @@
 import type { BookingCatalog, BookingService, BusinessHour } from "@/lib/booking/types";
 
-import { fallbackCatalog } from "@/lib/booking/config";
+import { defaultBusinessBreaks, fallbackCatalog } from "@/lib/booking/config";
 import { bookingTimezone } from "@/lib/env";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
@@ -90,6 +90,7 @@ export async function getBookingCatalog(): Promise<BookingCatalog> {
     timezone: bookingTimezone,
     services,
     businessHours,
+    businessBreaks: defaultBusinessBreaks,
   };
 }
 

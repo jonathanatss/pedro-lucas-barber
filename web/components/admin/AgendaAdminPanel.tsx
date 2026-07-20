@@ -37,6 +37,7 @@ type Appointment = {
   id: string;
   notes: string | null;
   serviceName: string;
+  servicePriceLabel: string | null;
   startsAt: string;
   status: string;
 };
@@ -74,7 +75,7 @@ function normalizeBusinessHours(businessHours: BusinessHour[]) {
 
     return (
       existing ?? {
-        closesAt: "18:00",
+        closesAt: "19:00",
         isClosed: weekday === 0,
         opensAt: "09:00",
         weekday,
@@ -140,7 +141,7 @@ export default function AgendaAdminPanel() {
   const [error, setError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [overrideForm, setOverrideForm] = useState({
-    closesAt: "18:00",
+    closesAt: "19:00",
     date: getTodayInTimezone(),
     isClosed: false,
     opensAt: "09:00",
@@ -148,7 +149,7 @@ export default function AgendaAdminPanel() {
   });
   const [blockForm, setBlockForm] = useState({
     date: getTodayInTimezone(),
-    endsAt: "14:00",
+    endsAt: "13:00",
     reason: "Almoço",
     startsAt: "12:00",
   });
@@ -604,7 +605,8 @@ export default function AgendaAdminPanel() {
           <h2 className={styles.cardTitle}>Bloquear intervalo</h2>
           <p className={styles.copy}>
             Qualquer intervalo bloqueado desaparece da agenda pública
-            imediatamente.
+            imediatamente. A pausa recorrente de almoço já fica reservada das
+            12:00 às 13:00.
           </p>
 
           <form
@@ -721,7 +723,11 @@ export default function AgendaAdminPanel() {
                   <div>
                     <strong>{formatDateTime(appointment.startsAt, timezone)}</strong>
                     <p>
-                      {appointment.serviceName} · {appointment.customerName}
+                      {appointment.serviceName}
+                      {appointment.servicePriceLabel
+                        ? ` · ${appointment.servicePriceLabel}`
+                        : ""}{" "}
+                      · {appointment.customerName}
                     </p>
                     <p>{appointment.customerPhone}</p>
                     <span

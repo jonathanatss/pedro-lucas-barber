@@ -47,9 +47,17 @@ type AppointmentRow = {
   ends_at: string;
   id: string;
   notes: string | null;
+  service_id: string | null;
   service_name_snapshot: string;
+  service_slug_snapshot: string;
   starts_at: string;
   status: string;
+};
+
+type ServicePriceRow = {
+  id: string;
+  price_label: string;
+  slug: string;
 };
 
 const timeSchema = z.string().refine(
@@ -188,7 +196,7 @@ function mapBlockedPeriod(row: BlockedPeriodRow) {
   };
 }
 
-function mapAppointment(row: AppointmentRow) {
+function mapAppointment(row: AppointmentRow, servicePriceLabels: Map<string, string>) {
   return {
     barberWhatsappProvider: row.barber_whatsapp_provider,
     barberWhatsappStatus: row.barber_whatsapp_status,
@@ -199,6 +207,10 @@ function mapAppointment(row: AppointmentRow) {
     id: row.id,
     notes: row.notes,
     serviceName: row.service_name_snapshot,
+    servicePriceLabel:
+      (row.service_id ? servicePriceLabels.get(row.service_id) : null) ??
+      servicePriceLabels.get(row.service_slug_snapshot) ??
+      null,
     startsAt: row.starts_at,
     status: row.status,
   };
@@ -216,6 +228,7 @@ async function readAgenda() {
     overridesResult,
     blockedPeriodsResult,
     appointmentsResult,
+    servicesResult,
   ] = await Promise.all([
     supabase
       .from("business_hours")
@@ -236,12 +249,13 @@ async function readAgenda() {
     supabase
       .from("appointments")
       .select(
-        "id, customer_name, customer_phone, customer_email, notes, service_name_snapshot, starts_at, ends_at, status, barber_whatsapp_status, barber_whatsapp_provider",
+        "id, customer_name, customer_phone, customer_email, notes, service_id, service_name_snapshot, service_slug_snapshot, starts_at, ends_at, status, barber_whatsapp_status, barber_whatsapp_provider",
       )
       .in("status", ["confirmed", "pending_sync"])
       .gte("starts_at", windowStart)
       .lte("starts_at", windowEnd)
       .order("starts_at", { ascending: true }),
+    supabase.from("services").select("id, slug, price_label"),
   ]);
 
   const errors = [
@@ -249,6 +263,7 @@ async function readAgenda() {
     overridesResult.error,
     blockedPeriodsResult.error,
     appointmentsResult.error,
+    servicesResult.error,
   ].filter(Boolean);
 
   if (errors.length) {
@@ -259,9 +274,18 @@ async function readAgenda() {
     );
   }
 
+  const servicePriceLabels = new Map<string, string>();
+
+  (servicesResult.data ?? []).forEach((row) => {
+    const service = row as ServicePriceRow;
+
+    servicePriceLabels.set(service.id, service.price_label);
+    servicePriceLabels.set(service.slug, service.price_label);
+  });
+
   return {
     appointments: (appointmentsResult.data ?? []).map((row) =>
-      mapAppointment(row as AppointmentRow),
+      mapAppointment(row as AppointmentRow, servicePriceLabels),
     ),
     blockedPeriods: (blockedPeriodsResult.data ?? []).map((row) =>
       mapBlockedPeriod(row as BlockedPeriodRow),

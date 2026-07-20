@@ -2,7 +2,15 @@ import type { BookingCatalog } from "@/lib/booking/types";
 
 import { bookingTimezone } from "@/lib/env";
 
-export const slotIntervalMinutes = 15;
+export const slotIntervalMinutes = 40;
+
+export const defaultBusinessBreaks = [
+  {
+    endsAt: "13:00",
+    reason: "Almoço",
+    startsAt: "12:00",
+  },
+];
 
 export const fallbackCatalog: BookingCatalog = {
   timezone: bookingTimezone,
@@ -15,7 +23,7 @@ export const fallbackCatalog: BookingCatalog = {
         "Corte personalizado com acabamento impecável, lavagem e finalização profissional.",
       durationMinutes: 40,
       bufferBeforeMinutes: 0,
-      bufferAfterMinutes: 5,
+      bufferAfterMinutes: 0,
       priceLabel: "R$ 35",
       sortOrder: 1,
       active: true,
@@ -27,7 +35,7 @@ export const fallbackCatalog: BookingCatalog = {
         "Design, aparagem e hidratação da barba com navalha quente e produtos premium.",
       durationMinutes: 30,
       bufferBeforeMinutes: 0,
-      bufferAfterMinutes: 5,
+      bufferAfterMinutes: 0,
       priceLabel: "R$ 30",
       sortOrder: 2,
       active: true,
@@ -39,7 +47,7 @@ export const fallbackCatalog: BookingCatalog = {
         "Corte + barba com todo o cuidado que você merece. O combo mais pedido da casa.",
       durationMinutes: 70,
       bufferBeforeMinutes: 0,
-      bufferAfterMinutes: 10,
+      bufferAfterMinutes: 0,
       priceLabel: "R$ 60",
       sortOrder: 3,
       active: true,
@@ -51,7 +59,7 @@ export const fallbackCatalog: BookingCatalog = {
         "Design e alinhamento de sobrancelha com navalha para um acabamento preciso.",
       durationMinutes: 10,
       bufferBeforeMinutes: 0,
-      bufferAfterMinutes: 5,
+      bufferAfterMinutes: 0,
       priceLabel: "R$ 10",
       sortOrder: 4,
       active: true,
@@ -63,19 +71,20 @@ export const fallbackCatalog: BookingCatalog = {
         "Acabamento da nuca e contorno inferior do corte para um resultado mais limpo e definido.",
       durationMinutes: 10,
       bufferBeforeMinutes: 0,
-      bufferAfterMinutes: 5,
+      bufferAfterMinutes: 0,
       priceLabel: "R$ 10",
       sortOrder: 5,
       active: true,
     },
   ],
   businessHours: [
-    { weekday: 0, opensAt: "09:00", closesAt: "18:00", isClosed: true },
-    { weekday: 1, opensAt: "09:00", closesAt: "18:00", isClosed: false },
-    { weekday: 2, opensAt: "09:00", closesAt: "18:00", isClosed: false },
-    { weekday: 3, opensAt: "09:00", closesAt: "18:00", isClosed: false },
-    { weekday: 4, opensAt: "09:00", closesAt: "18:00", isClosed: false },
-    { weekday: 5, opensAt: "09:00", closesAt: "18:00", isClosed: false },
-    { weekday: 6, opensAt: "09:00", closesAt: "18:00", isClosed: false },
+    { weekday: 0, opensAt: "09:00", closesAt: "19:00", isClosed: true },
+    { weekday: 1, opensAt: "09:00", closesAt: "19:00", isClosed: false },
+    { weekday: 2, opensAt: "09:00", closesAt: "19:00", isClosed: false },
+    { weekday: 3, opensAt: "09:00", closesAt: "19:00", isClosed: false },
+    { weekday: 4, opensAt: "09:00", closesAt: "19:00", isClosed: false },
+    { weekday: 5, opensAt: "09:00", closesAt: "19:00", isClosed: false },
+    { weekday: 6, opensAt: "09:00", closesAt: "19:00", isClosed: false },
   ],
+  businessBreaks: defaultBusinessBreaks,
 };

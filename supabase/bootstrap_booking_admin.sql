@@ -106,11 +106,11 @@ set
   updated_at = now()
 from (
   values
-    ('corte-de-cabelo', 'Corte de Cabelo', 'Corte personalizado com acabamento profissional.', 40, 0, 5, 'R$ 35', 1, true),
-    ('barba', 'Barba', 'Design, aparagem e hidratacao da barba.', 30, 0, 5, 'R$ 30', 2, true),
-    ('combo-completo', 'Combo Completo', 'Corte + barba com todo o cuidado da casa.', 70, 0, 10, 'R$ 60', 3, true),
-    ('sobrancelha', 'Sobrancelha', 'Design e alinhamento de sobrancelha.', 10, 0, 5, 'R$ 10', 4, true),
-    ('pezinho', 'Pezinho', 'Acabamento da nuca e contorno inferior do corte.', 10, 0, 5, 'R$ 10', 5, true)
+    ('corte-de-cabelo', 'Corte de Cabelo', 'Corte personalizado com acabamento profissional.', 40, 0, 0, 'R$ 35', 1, true),
+    ('barba', 'Barba', 'Design, aparagem e hidratacao da barba.', 30, 0, 0, 'R$ 30', 2, true),
+    ('combo-completo', 'Combo Completo', 'Corte + barba com todo o cuidado da casa.', 70, 0, 0, 'R$ 60', 3, true),
+    ('sobrancelha', 'Sobrancelha', 'Design e alinhamento de sobrancelha.', 10, 0, 0, 'R$ 10', 4, true),
+    ('pezinho', 'Pezinho', 'Acabamento da nuca e contorno inferior do corte.', 10, 0, 0, 'R$ 10', 5, true)
 ) as service_seed (
   slug,
   name,
@@ -138,11 +138,11 @@ insert into public.services (
 select *
 from (
   values
-    ('corte-de-cabelo', 'Corte de Cabelo', 'Corte personalizado com acabamento profissional.', 40, 0, 5, 'R$ 35', 1, true),
-    ('barba', 'Barba', 'Design, aparagem e hidratacao da barba.', 30, 0, 5, 'R$ 30', 2, true),
-    ('combo-completo', 'Combo Completo', 'Corte + barba com todo o cuidado da casa.', 70, 0, 10, 'R$ 60', 3, true),
-    ('sobrancelha', 'Sobrancelha', 'Design e alinhamento de sobrancelha.', 10, 0, 5, 'R$ 10', 4, true),
-    ('pezinho', 'Pezinho', 'Acabamento da nuca e contorno inferior do corte.', 10, 0, 5, 'R$ 10', 5, true)
+    ('corte-de-cabelo', 'Corte de Cabelo', 'Corte personalizado com acabamento profissional.', 40, 0, 0, 'R$ 35', 1, true),
+    ('barba', 'Barba', 'Design, aparagem e hidratacao da barba.', 30, 0, 0, 'R$ 30', 2, true),
+    ('combo-completo', 'Combo Completo', 'Corte + barba com todo o cuidado da casa.', 70, 0, 0, 'R$ 60', 3, true),
+    ('sobrancelha', 'Sobrancelha', 'Design e alinhamento de sobrancelha.', 10, 0, 0, 'R$ 10', 4, true),
+    ('pezinho', 'Pezinho', 'Acabamento da nuca e contorno inferior do corte.', 10, 0, 0, 'R$ 10', 5, true)
 ) as service_seed (
   slug,
   name,
@@ -209,7 +209,7 @@ end $$;
 create table if not exists public.business_hours (
   weekday integer primary key check (weekday between 0 and 6),
   opens_at text not null default '09:00',
-  closes_at text not null default '18:00',
+  closes_at text not null default '19:00',
   is_closed boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -218,7 +218,7 @@ create table if not exists public.business_hours (
 alter table public.business_hours
   add column if not exists weekday integer,
   add column if not exists opens_at text not null default '09:00',
-  add column if not exists closes_at text not null default '18:00',
+  add column if not exists closes_at text not null default '19:00',
   add column if not exists is_closed boolean not null default false,
   add column if not exists created_at timestamptz not null default now(),
   add column if not exists updated_at timestamptz not null default now();
@@ -239,13 +239,13 @@ set
   updated_at = now()
 from (
   values
-    (0, '09:00', '18:00', true),
-    (1, '09:00', '18:00', false),
-    (2, '09:00', '18:00', false),
-    (3, '09:00', '18:00', false),
-    (4, '09:00', '18:00', false),
-    (5, '09:00', '18:00', false),
-    (6, '09:00', '18:00', false)
+    (0, '09:00', '19:00', true),
+    (1, '09:00', '19:00', false),
+    (2, '09:00', '19:00', false),
+    (3, '09:00', '19:00', false),
+    (4, '09:00', '19:00', false),
+    (5, '09:00', '19:00', false),
+    (6, '09:00', '19:00', false)
 ) as hour_seed (weekday, opens_at, closes_at, is_closed)
 where public.business_hours.weekday = hour_seed.weekday;
 
@@ -253,13 +253,13 @@ insert into public.business_hours (weekday, opens_at, closes_at, is_closed)
 select *
 from (
   values
-    (0, '09:00', '18:00', true),
-    (1, '09:00', '18:00', false),
-    (2, '09:00', '18:00', false),
-    (3, '09:00', '18:00', false),
-    (4, '09:00', '18:00', false),
-    (5, '09:00', '18:00', false),
-    (6, '09:00', '18:00', false)
+    (0, '09:00', '19:00', true),
+    (1, '09:00', '19:00', false),
+    (2, '09:00', '19:00', false),
+    (3, '09:00', '19:00', false),
+    (4, '09:00', '19:00', false),
+    (5, '09:00', '19:00', false),
+    (6, '09:00', '19:00', false)
 ) as hour_seed (weekday, opens_at, closes_at, is_closed)
 where not exists (
   select 1
@@ -417,7 +417,7 @@ create table if not exists public.business_day_overrides (
   id uuid primary key default gen_random_uuid(),
   date date not null unique,
   opens_at text not null default '09:00',
-  closes_at text not null default '18:00',
+  closes_at text not null default '19:00',
   is_closed boolean not null default false,
   reason text,
   created_at timestamptz not null default now(),

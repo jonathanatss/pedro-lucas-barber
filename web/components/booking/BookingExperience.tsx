@@ -2,16 +2,23 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import type { AvailabilityResult, BookingService, BusinessHour } from "@/lib/booking/types";
+import type {
+  AvailabilityResult,
+  BookingService,
+  BusinessBreak,
+  BusinessHour,
+} from "@/lib/booking/types";
 
 import { siteContent } from "@/content/site";
 
 import styles from "./BookingExperience.module.css";
 
 type BookingExperienceProps = {
+  businessBreaks: BusinessBreak[];
   businessHours: BusinessHour[];
   embedded?: boolean;
   services: BookingService[];
+  slotIntervalMinutes: number;
   timezone: string;
 };
 
@@ -36,6 +43,12 @@ type QuickDateOption = {
   label: string;
   meta: string;
 };
+
+function timeToMinutes(value: string) {
+  const [hours, minutes] = value.split(":").map(Number);
+
+  return hours * 60 + minutes;
+}
 
 function getTodayInTimezone(timezone: string) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -98,6 +111,7 @@ function getInitialBookingDate(timezone: string, businessHours: BusinessHour[]) 
 function buildQuickDateOptions(
   timezone: string,
   businessHours: BusinessHour[],
+  businessBreaks: BusinessBreak[],
 ): QuickDateOption[] {
   const today = getTodayInTimezone(timezone);
   const options: QuickDateOption[] = [];
@@ -114,11 +128,46 @@ function buildQuickDateOptions(
     options.push({
       date: candidate,
       label: offset === 0 ? "Hoje" : offset === 1 ? "Amanhã" : formatShortDateForHumans(candidate, timezone),
-      meta: `${businessHour.opensAt} às ${businessHour.closesAt}`,
+      meta: formatBusinessWindowLabel(businessHour, businessBreaks),
     });
   }
 
   return options;
+}
+
+function formatBusinessWindowLabel(
+  businessHour: BusinessHour,
+  businessBreaks: BusinessBreak[],
+) {
+  if (businessHour.isClosed) {
+    return "Fechado";
+  }
+
+  const windows = businessBreaks
+    .filter(
+      (businessBreak) =>
+        timeToMinutes(businessBreak.startsAt) > timeToMinutes(businessHour.opensAt) &&
+        timeToMinutes(businessBreak.endsAt) < timeToMinutes(businessHour.closesAt),
+    )
+    .reduce(
+      (currentWindows, businessBreak) =>
+        currentWindows.flatMap((window) => {
+          if (
+            timeToMinutes(businessBreak.endsAt) <= timeToMinutes(window.startsAt) ||
+            timeToMinutes(businessBreak.startsAt) >= timeToMinutes(window.endsAt)
+          ) {
+            return [window];
+          }
+
+          return [
+            { startsAt: window.startsAt, endsAt: businessBreak.startsAt },
+            { startsAt: businessBreak.endsAt, endsAt: window.endsAt },
+          ].filter((item) => timeToMinutes(item.startsAt) < timeToMinutes(item.endsAt));
+        }),
+      [{ startsAt: businessHour.opensAt, endsAt: businessHour.closesAt }],
+    );
+
+  return windows.map((window) => `${window.startsAt} às ${window.endsAt}`).join(" · ");
 }
 
 function formatDateTime(value: string, timezone: string) {
@@ -165,9 +214,11 @@ function buildManualBookingWhatsAppHref({
 }
 
 export default function BookingExperience({
+  businessBreaks,
   businessHours,
   embedded = false,
   services,
+  slotIntervalMinutes,
   timezone,
 }: BookingExperienceProps) {
   const [selectedServiceSlug, setSelectedServiceSlug] = useState(services[0]?.slug ?? "");
@@ -194,9 +245,20 @@ export default function BookingExperience({
   );
 
   const quickDateOptions = useMemo(
-    () => buildQuickDateOptions(timezone, businessHours),
-    [businessHours, timezone],
+    () => buildQuickDateOptions(timezone, businessHours, businessBreaks),
+    [businessBreaks, businessHours, timezone],
   );
+
+  const standardBusinessHour = useMemo(
+    () =>
+      businessHours.find((businessHour) => businessHour.weekday === 1) ??
+      businessHours.find((businessHour) => !businessHour.isClosed),
+    [businessHours],
+  );
+
+  const standardBusinessWindow = standardBusinessHour
+    ? formatBusinessWindowLabel(standardBusinessHour, businessBreaks)
+    : "horário configurado no painel";
 
   const manualFallbackHref = useMemo(() => {
     if (!formError || !selectedService || !selectedDate || !selectedTime) {
@@ -577,7 +639,7 @@ export default function BookingExperience({
             <li className={styles.infoItem}>
               <span className={styles.infoLabel}>Janela operacional</span>
               <div className={styles.infoValue}>
-                Segunda a sábado, das 9h às 18h.
+                Segunda a sábado, das {standardBusinessWindow}.
                 <br />
                 Domingo fechado.
               </div>
@@ -585,8 +647,9 @@ export default function BookingExperience({
             <li className={styles.infoItem}>
               <span className={styles.infoLabel}>Regras do slot</span>
               <div className={styles.infoValue}>
-                Os horários disponíveis já consideram duração do serviço, buffers operacionais e
-                bloqueios vindos da agenda.
+                Os horários disponíveis são gerados de {slotIntervalMinutes} em{" "}
+                {slotIntervalMinutes} minutos e já consideram duração do serviço,
+                pausa de almoço e bloqueios vindos da agenda.
               </div>
             </li>
           </ul>
