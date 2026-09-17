@@ -13,6 +13,10 @@ export function buildUtcDate(date: string, time: string, timezone: string) {
   return fromZonedTime(`${date}T${time}:00`, timezone);
 }
 
+export function isFutureBookingStart(start: Date, now = new Date()) {
+  return start.getTime() > now.getTime();
+}
+
 export function getWeekdayForDate(date: string, timezone: string) {
   const localNoon = fromZonedTime(`${date}T12:00:00`, timezone);
   const isoWeekday = Number(formatInTimeZone(localNoon, timezone, "i"));

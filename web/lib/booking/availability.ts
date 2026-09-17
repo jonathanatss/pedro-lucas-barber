@@ -8,6 +8,7 @@ import {
   addMinutesSafe,
   buildUtcDate,
   formatTimeLabel,
+  isFutureBookingStart,
   isIsoDateString,
   minutesToTime,
   overlaps,
@@ -123,6 +124,7 @@ export async function getAvailabilityForDate(
   const startMinutes = timeToMinutes(businessHour.opensAt);
   const endMinutes = timeToMinutes(businessHour.closesAt);
   const slots = [];
+  const now = new Date();
 
   for (
     let cursor = startMinutes;
@@ -131,6 +133,11 @@ export async function getAvailabilityForDate(
   ) {
     const time = minutesToTime(cursor);
     const customerStart = buildUtcDate(date, time, catalog.timezone);
+
+    if (!isFutureBookingStart(customerStart, now)) {
+      continue;
+    }
+
     const occupiedStart = addMinutesSafe(
       customerStart,
       -service.bufferBeforeMinutes,

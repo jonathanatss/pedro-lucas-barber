@@ -4,7 +4,13 @@ import { createGoogleCalendarEvent } from "@/lib/google-calendar";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getAvailabilityForDate } from "@/lib/booking/availability";
 import { getBookingCatalog } from "@/lib/booking/catalog";
-import { addMinutesSafe, buildUtcDate, isIsoDateString, isTimeString } from "@/lib/booking/time";
+import {
+  addMinutesSafe,
+  buildUtcDate,
+  isFutureBookingStart,
+  isIsoDateString,
+  isTimeString,
+} from "@/lib/booking/time";
 import { notifyBarberOnWhatsApp } from "@/lib/booking/whatsapp-notification";
 import { getMissingSupabaseServiceCredentials } from "@/lib/env";
 
@@ -73,6 +79,20 @@ export async function createAppointment(rawInput: unknown) {
   }
 
   const catalog = await getBookingCatalog();
+  const customerStart = buildUtcDate(input.date, input.time, catalog.timezone);
+
+  function requireFutureStart() {
+    if (!isFutureBookingStart(customerStart)) {
+      throw new BookingError(
+        "Este horário já passou. Escolha um horário futuro para continuar.",
+        409,
+        "slot_in_past",
+      );
+    }
+  }
+
+  requireFutureStart();
+
   const availability = await getAvailabilityForDate(input.date, input.serviceSlug);
   const selectedSlot = availability.slots.find((slot) => slot.time === input.time);
 
@@ -90,9 +110,11 @@ export async function createAppointment(rawInput: unknown) {
     throw new BookingError("Serviço inválido.", 400, "invalid_service");
   }
 
-  const customerStart = buildUtcDate(input.date, input.time, catalog.timezone);
   const serviceEnd = addMinutesSafe(customerStart, service.durationMinutes);
   const occupiedEnd = addMinutesSafe(serviceEnd, service.bufferAfterMinutes);
+
+  // Availability lookups can outlive a slot's start time.
+  requireFutureStart();
 
   const insertResult = await supabase
     .from("appointments")

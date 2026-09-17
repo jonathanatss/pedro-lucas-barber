@@ -232,6 +232,7 @@ export default function BookingExperience({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<AppointmentResponse | null>(null);
+  const [availabilityVersion, setAvailabilityVersion] = useState(0);
   const [form, setForm] = useState<BookingFormState>({
     customerName: "",
     customerPhone: "",
@@ -280,12 +281,21 @@ export default function BookingExperience({
     }
 
     const controller = new AbortController();
+    let loading = false;
 
-    async function loadAvailability() {
+    async function loadAvailability(showLoading = false) {
+      if (loading || controller.signal.aborted) {
+        return;
+      }
+
+      loading = true;
+
       try {
-        setIsLoadingAvailability(true);
+        if (showLoading) {
+          setIsLoadingAvailability(true);
+          setSelectedTime("");
+        }
         setAvailabilityError(null);
-        setSelectedTime("");
 
         const response = await fetch(
           `/api/availability?date=${selectedDate}&service=${selectedServiceSlug}`,
@@ -297,33 +307,49 @@ export default function BookingExperience({
 
         const payload = (await response.json()) as AvailabilityResult & { error?: string };
 
+        if (controller.signal.aborted) {
+          return;
+        }
+
         if (!response.ok) {
           throw new Error(payload.error ?? "Não foi possível carregar os horários.");
         }
 
         setAvailability(payload);
+        setSelectedTime((current) =>
+          payload.slots.some((slot) => slot.time === current) ? current : "",
+        );
       } catch (error) {
         if (controller.signal.aborted) {
           return;
         }
 
         setAvailability(null);
+        setSelectedTime("");
         setAvailabilityError(
           error instanceof Error
             ? error.message
             : "Não foi possível carregar os horários.",
         );
       } finally {
+        loading = false;
         if (!controller.signal.aborted) {
           setIsLoadingAvailability(false);
         }
       }
     }
 
-    void loadAvailability();
+    void loadAvailability(true);
+    const interval = window.setInterval(() => void loadAvailability(), 30_000);
+    const refreshOnFocus = () => void loadAvailability();
+    window.addEventListener("focus", refreshOnFocus);
 
-    return () => controller.abort();
-  }, [selectedDate, selectedServiceSlug]);
+    return () => {
+      controller.abort();
+      window.clearInterval(interval);
+      window.removeEventListener("focus", refreshOnFocus);
+    };
+  }, [availabilityVersion, selectedDate, selectedServiceSlug]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -353,9 +379,13 @@ export default function BookingExperience({
 
       const payload = (await response.json()) as
         | AppointmentResponse
-        | { error?: string };
+        | { code?: string; error?: string };
 
       if (!response.ok) {
+        if ("code" in payload && payload.code?.startsWith("slot_")) {
+          setAvailabilityVersion((current) => current + 1);
+        }
+
         throw new Error(
           "error" in payload
             ? payload.error ?? "Não foi possível confirmar o agendamento."
@@ -364,6 +394,7 @@ export default function BookingExperience({
       }
 
       setSuccess(payload as AppointmentResponse);
+      setAvailabilityVersion((current) => current + 1);
       setSelectedTime("");
       setForm({
         customerName: "",

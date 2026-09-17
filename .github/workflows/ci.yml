@@ -64,7 +64,7 @@ jobs:
             cd web
             npm ci
             if npm run | grep -q " test"; then
-              npm test -- --ci
+              npm test
             else
               echo "No test script found in web/package.json. Running smoke checks."
               test -s app/page.tsx
