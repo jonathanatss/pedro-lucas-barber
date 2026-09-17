@@ -64,11 +64,13 @@ for (const embedded of [false, true]) {
   test(`public booking ${embedded ? "embedded" : "standalone"} renders only the booking card`, () => {
     const html = renderToStaticMarkup(createElement(BookingExperience, { ...props, embedded }));
 
-    assert.doesNotMatch(html, /<aside\b|Resumo operacional|Timezone|Dias cadastrados|Regras do slot/);
+    assert.doesNotMatch(html, /<aside\b|Resumo operacional|Timezone|Dias cadastrados|Regras do slot|nativa|operacional|em tempo real/);
     assert.equal((html.match(/class="booking-panel"/g) ?? []).length, 1);
-    assert.match(html, /Monte seu agendamento/);
+    assert.match(html, /Agende seu horário/);
     assert.match(html, /Corte de Cabelo/);
     assert.match(html, /R\$ 35/);
+    assert.match(html, /40 min/);
+    assert.doesNotMatch(html, /Haircut/);
     assert.match(html, /<form\b/);
     assert.match(html, /id="booking-date"/);
     assert.match(html, /id="customer-name"/);

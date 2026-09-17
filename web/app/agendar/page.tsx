@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 
 import BookingExperience from "@/components/booking/BookingExperience";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import { getBookingCatalog } from "@/lib/booking/catalog";
+import { siteRoutes } from "@/lib/navigation";
 
 import "../globals.css";
 
@@ -23,24 +26,31 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
   const embedded = params.embedded === "1";
 
   return (
-    <main
-      className="section"
-      style={{
-        minHeight: embedded ? "auto" : "100vh",
-        padding: embedded ? "0" : "48px 0 80px",
-        background:
-          "radial-gradient(circle at top, rgba(232, 185, 35, 0.14), transparent 22%), #0f1a0f",
-      }}
-    >
-      <div className="container">
-        <BookingExperience
-          businessBreaks={catalog.businessBreaks}
-          businessHours={catalog.businessHours}
-          embedded={embedded}
-          services={catalog.services}
-          timezone={catalog.timezone}
-        />
-      </div>
-    </main>
+    <>
+      {!embedded ? <Header activePath={siteRoutes.booking} /> : null}
+      <main
+        className="section"
+        style={{
+          minHeight: embedded ? "auto" : "100vh",
+          padding: embedded ? "0" : "48px 0 80px",
+          background:
+            "radial-gradient(circle at top, rgba(232, 185, 35, 0.14), transparent 22%), #0f1a0f",
+        }}
+      >
+        <div className="container">
+          {!embedded ? (
+            <a className="back-link" href={siteRoutes.home}>Voltar para o início</a>
+          ) : null}
+          <BookingExperience
+            businessBreaks={catalog.businessBreaks}
+            businessHours={catalog.businessHours}
+            embedded={embedded}
+            services={catalog.services}
+            timezone={catalog.timezone}
+          />
+        </div>
+      </main>
+      {!embedded ? <Footer /> : null}
+    </>
   );
 }

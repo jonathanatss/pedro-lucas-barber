@@ -9,7 +9,7 @@
   <!-- Open Graph / WhatsApp / Facebook -->
   <meta property="og:type" content="business.business" />
   <meta property="og:title" content="Pedro Lucas Barbearia – Natal/RN" />
-  <meta property="og:description" content="Corte e barba com precisão e estilo. Agende online em segundos. Seg–Sáb das 9h às 18h." />
+  <meta property="og:description" content="Corte e barba com precisão e estilo. Agende seu horário. Seg–Sáb das 9h às 19h, com pausa das 12h às 13h." />
   <meta property="og:url" content="https://pedrolucasbarbearia.com.br" />
   <meta property="og:image" content="https://pedrolucasbarbearia.com.br/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
@@ -59,7 +59,7 @@
         <a href="#faq">FAQ</a>
         <a href="/agendar" class="btn btn-gold" style="padding:10px 20px;font-size:12px;">Agendar</a>
       </nav>
-      <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">
+      <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobileMenu">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -72,7 +72,8 @@
       <a href="#avaliacoes">Avaliações</a>
       <a href="#localizacao">Localização</a>
       <a href="#faq">FAQ</a>
-      <a href="#agendamento">Agendar Horário</a>
+      <a href="/agendar">Agendar Horário</a>
+      <a href="/clube">Clube mensal</a>
       <a href="https://wa.me/5584986197944?text=Olá!%20Gostaria%20de%20agendar%20um%20horário." target="_blank" rel="noopener" style="color:#25D366;">💬 WhatsApp</a>
     </nav>
   </header>
@@ -113,7 +114,7 @@
           </div>
           <div class="stat-item">
             <span class="stat-num">Seg–Sáb</span>
-            <span class="stat-label">9h às 18h</span>
+            <span class="stat-label">9h às 19h</span>
           </div>
         </div>
       </div>
@@ -368,13 +369,12 @@
       <div class="scheduling-wrapper">
         <div class="scheduling-info fade-in">
           <span class="section-tag">Reserve seu hor&aacute;rio</span>
-          <h2 class="section-title">Agende no pr&oacute;prio site</h2>
+          <h2 class="section-title">Agende seu hor&aacute;rio</h2>
           <p>
-            Nosso agendamento agora &eacute; nativo. Escolha o servi&ccedil;o, veja os hor&aacute;rios dispon&iacute;veis em
-            tempo real e confirme sua reserva sem sair do site.
+            Escolha o servi&ccedil;o, a data e o hor&aacute;rio.
           </p>
           <ul class="schedule-details">
-            <li><span class="icon">&#x1F558;</span> Seg a S&aacute;b das 9h &agrave;s 18h</li>
+            <li><span class="icon">&#x1F558;</span> Seg a S&aacute;b: 9h &agrave;s 12h e 13h &agrave;s 19h</li>
             <li><span class="icon">&#x1F4CD;</span> Natal / RN</li>
             <li><span class="icon">&#x1F4DE;</span> <a href="tel:+5584986197944" style="color:var(--cream);text-decoration:none;">(84) 98619-7944</a></li>
             <li><span class="icon">&#x26A0;&#xFE0F;</span> Cancelamentos com pelo menos 2h de anteced&ecirc;ncia</li>
@@ -560,14 +560,14 @@
               <span class="icon">📍</span>
               <div>
                 <p class="detail-title">Endereço</p>
-                <p class="detail-val"><!-- INSIRA O ENDEREÇO AQUI --><em style="color:var(--gold);">Insira o endereço completo aqui</em><br>Natal – RN</p>
+                <p class="detail-val">Natal – RN</p>
               </div>
             </li>
             <li>
               <span class="icon">🕘</span>
               <div>
                 <p class="detail-title">Horário de Funcionamento</p>
-                <p class="detail-val">Segunda a Sábado: 9h às 18h<br>Domingo: Fechado</p>
+                <p class="detail-val">Segunda a Sábado: 9h às 12h e 13h às 19h<br>Domingo: Fechado</p>
               </div>
             </li>
             <li>
@@ -595,9 +595,8 @@
         </div>
         <div class="map-placeholder fade-in">
           <div class="map-icon">🗺️</div>
-          <p>Cole o iframe do Google Maps aqui para exibir sua localização.</p>
-          <p>Em <strong>Google Maps</strong> → <em>Compartilhar → Incorporar mapa</em> → copie o código iframe.</p>
-          <code>&lt;!-- iframe Google Maps aqui --&gt;</code>
+          <p>Como chegar</p>
+          <a href="https://wa.me/5584986197944?text=Ol%C3%A1!%20Pode%20me%20enviar%20o%20endere%C3%A7o%20da%20barbearia%3F" class="btn btn-whatsapp" target="_blank" rel="noopener">Consultar endereço pelo WhatsApp</a>
         </div>
       </div>
     </div>
@@ -658,7 +657,7 @@
             <span class="faq-icon" aria-hidden="true">+</span>
           </button>
           <div class="faq-answer" aria-hidden="true">
-            <p class="faq-answer-inner">Os planos são cobrados mensalmente e garantem descontos e prioridade no agendamento. Para assinar, escolha um plano no Clube Mensal e finalize o cartão no checkout seguro.</p>
+            <p class="faq-answer-inner">Os planos são cobrados mensalmente e garantem descontos e prioridade no agendamento. Para assinar, escolha um plano no Clube Mensal e conclua o pagamento.</p>
           </div>
         </div>
 
@@ -681,7 +680,7 @@
     <div class="container">
       <span class="section-tag">Pronto para o próximo nível?</span>
       <h2 class="section-title">Seu corte perfeito<br>está a um clique.</h2>
-      <p>Reserve seu horário agora e saia renovado. Atendimento de segunda a sábado, das 9h às 18h.</p>
+      <p>Reserve seu horário e saia renovado.</p>
       <div class="cta-buttons">
         <a href="/agendar" class="btn btn-gold">✂ Agendar pelo site</a>
         <a href="https://wa.me/5584986197944?text=Olá!%20Gostaria%20de%20agendar%20um%20horário." class="btn btn-whatsapp" target="_blank" rel="noopener">💬 Chamar no WhatsApp</a>
@@ -718,7 +717,9 @@
             <li><a href="#instagram">Instagram</a></li>
             <li><a href="#avaliacoes">Avaliações</a></li>
             <li><a href="#faq">FAQ</a></li>
-            <li><a href="#agendamento">Agendamento</a></li>
+            <li><a href="/agendar">Agendamento</a></li>
+            <li><a href="/clube">Clube mensal</a></li>
+            <li><a href="/admin/agenda">Área do barbeiro</a></li>
           </ul>
         </div>
 
@@ -728,7 +729,7 @@
             <li><a href="tel:+5584986197944" style="color:var(--gray);text-decoration:none;">📞 (84) 98619-7944</a></li>
             <li><a href="https://wa.me/5584986197944" target="_blank" rel="noopener">WhatsApp</a></li>
             <li><a href="https://www.instagram.com/plucas.barbeer/" target="_blank" rel="noopener">@plucas.barbeer</a></li>
-            <li><span>⏰ Seg–Sáb: 9h–18h</span></li>
+            <li><span>⏰ Seg–Sáb: 9h–12h e 13h–19h</span></li>
           </ul>
         </div>
       </div>

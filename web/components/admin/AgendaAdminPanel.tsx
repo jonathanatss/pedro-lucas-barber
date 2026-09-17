@@ -462,7 +462,7 @@ export default function AgendaAdminPanel() {
       <main className={styles.shell}>
         <section className={styles.card}>
           <span className={styles.eyebrow}>Painel da agenda</span>
-          <h1 className={styles.title}>Carregando controle operacional...</h1>
+          <h1 className={styles.title}>Carregando agenda...</h1>
         </section>
       </main>
     );
@@ -472,11 +472,10 @@ export default function AgendaAdminPanel() {
     return (
       <main className={styles.shell}>
         <section className={styles.card}>
-          <span className={styles.eyebrow}>Configuração pendente</span>
-          <h1 className={styles.title}>Configure o acesso administrativo.</h1>
+          <span className={styles.eyebrow}>Painel da agenda</span>
+          <h1 className={styles.title}>Acesso administrativo indisponível.</h1>
           <p className={styles.lead}>
-            Verifique as credenciais do Supabase e defina `ADMIN_SESSION_SECRET` ou
-            `ADMIN_PASSWORD` na Netlify.
+            Entre em contato com o suporte.
           </p>
         </section>
       </main>
@@ -489,11 +488,6 @@ export default function AgendaAdminPanel() {
         <section className={`${styles.card} ${styles.loginCard}`}>
           <span className={styles.eyebrow}>Acesso do proprietário</span>
           <h1 className={styles.title}>Entrar no painel da agenda</h1>
-          <p className={styles.lead}>
-            Cada pessoa usa sua própria credencial. O acesso do suporte permanece
-            separado do acesso do barbeiro.
-          </p>
-
           <form className={styles.loginForm} onSubmit={handleLogin}>
             <label className={styles.label} htmlFor="admin-username">
               Usuário

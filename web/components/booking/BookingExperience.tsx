@@ -477,23 +477,15 @@ export default function BookingExperience({
 
   return (
     <div className={styles.shell}>
-      {!embedded ? (
-        <section className={styles.hero}>
-          <span className={styles.eyebrow}>Agendamento direto no site</span>
-          <h1 className={styles.title}>Escolha o serviço, o horário e confirme em poucos passos.</h1>
-          <p className={styles.lead}>
-            A agenda agora é nativa do site da Pedro Lucas Barbearia. O sistema cruza
-            disponibilidade, bloqueios da agenda e o calendário operacional antes de liberar
-            cada horário.
-          </p>
-        </section>
-      ) : null}
-
       <div className={styles.layout}>
         <section className={styles.panel}>
-          <h2 className={styles.panelTitle}>Monte seu agendamento</h2>
+          {embedded ? (
+            <h2 className={styles.panelTitle}>Agende seu horário</h2>
+          ) : (
+            <h1 className={styles.panelTitle}>Agende seu horário</h1>
+          )}
           <p className={styles.panelLead}>
-            Selecione o serviço, escolha a data e reserve um horário disponível em tempo real.
+            Escolha o serviço, a data e o horário.
           </p>
           <p className={styles.helper}>Nome completo e WhatsApp são campos obrigatórios.</p>
 
@@ -519,7 +511,6 @@ export default function BookingExperience({
                           {service.priceLabel} · {service.durationMinutes} min
                         </span>
                       </div>
-                      <p className={styles.serviceDescription}>{service.description}</p>
                     </button>
                   );
                 })}
@@ -680,12 +671,12 @@ export default function BookingExperience({
 
             <div className={styles.fieldGroup}>
               <label className={styles.label} htmlFor="customer-notes">
-                Observações
+                Observações (opcional)
               </label>
               <textarea
                 id="customer-notes"
                 className={styles.textarea}
-                placeholder="Preferências, restrições ou qualquer observação útil para o atendimento."
+                placeholder="Alguma preferência para o atendimento?"
                 value={form.notes}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, notes: event.target.value }))
@@ -719,13 +710,6 @@ export default function BookingExperience({
                 <strong>Agendamento confirmado.</strong>
                 <br />
                 {success.serviceName} em {formatDateTime(success.start, success.timezone)}.
-                {success.syncStatus === "pending_sync" ? (
-                  <>
-                    <br />
-                    A reserva foi registrada, mas a sincronização com o Google Calendar ficou
-                    pendente e precisa de revisão administrativa.
-                  </>
-                ) : null}
               </div>
             ) : null}
 

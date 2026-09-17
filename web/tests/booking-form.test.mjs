@@ -186,6 +186,20 @@ test("errors show on blur and clear after the field is corrected", () => {
   assert.equal(app.field("customer-phone").props["aria-invalid"], false);
 });
 
+test("confirmed reservation shows booking details, not internal calendar synchronization status", async () => {
+  const app = setupForm(201, {
+    serviceName: "Haircut", start: "2026-09-17T13:20:00.000Z",
+    timezone: "America/Sao_Paulo", syncStatus: "pending_sync",
+  });
+  app.fill("customer-name", validCustomer.customerName);
+  app.fill("customer-phone", validCustomer.customerPhone);
+  app.selectTime();
+  await app.submit();
+  assert.match(app.html(), /Agendamento confirmado/);
+  assert.match(app.html(), /Haircut/);
+  assert.doesNotMatch(app.html(), /Google Calendar|sincronização|administrativa|pending_sync/);
+});
+
 for (const status of [400, 409, 500]) {
   test(`HTTP ${status} ${status === 500 ? "offers" : "does not offer"} manual WhatsApp recovery`, async () => {
     const app = setupForm(status, {

@@ -57,20 +57,18 @@ export default function MembershipCheckout({ plans }: MembershipCheckoutProps) {
       const payload = (await response.json()) as CheckoutResponse | { error?: string };
 
       if (!response.ok || !("checkoutUrl" in payload)) {
-        throw new Error(
+        setError(
           "error" in payload
             ? payload.error ?? "Não foi possível iniciar a assinatura."
             : "Não foi possível iniciar a assinatura.",
         );
+        setIsSubmitting(false);
+        return;
       }
 
       window.location.assign(payload.checkoutUrl);
-    } catch (caughtError) {
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Não foi possível iniciar a assinatura.",
-      );
+    } catch {
+      setError("Não foi possível iniciar a assinatura. Tente mais tarde ou fale com a barbearia.");
       setIsSubmitting(false);
     }
   }
@@ -105,10 +103,9 @@ export default function MembershipCheckout({ plans }: MembershipCheckoutProps) {
 
       <section className={styles.formPanel}>
         <div className={styles.panelHeader}>
-          <span className={styles.eyebrow}>Clube mensal</span>
-          <h1>Assinatura recorrente da barbearia</h1>
+          <h2>Assinar plano mensal</h2>
           <p>
-            Preencha seus dados e finalize o cartão no checkout seguro do Asaas.
+            Cobrança automática mensal no cartão. Pagamento pelo Asaas.
           </p>
         </div>
 
@@ -177,7 +174,7 @@ export default function MembershipCheckout({ plans }: MembershipCheckoutProps) {
           {error ? <div className={styles.error}>{error}</div> : null}
 
           <button className={styles.submit} disabled={isSubmitting} type="submit">
-            {isSubmitting ? "Abrindo checkout..." : "Assinar com cartão"}
+            {isSubmitting ? "Abrindo pagamento..." : "Assinar com cartão"}
           </button>
         </form>
       </section>

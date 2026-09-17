@@ -42,6 +42,7 @@ select {
 }
 
 .header {
+  z-index: 100;
   position: sticky;
   top: 0;
   backdrop-filter: blur(8px);
@@ -50,6 +51,7 @@ select {
 }
 
 .header-inner {
+  gap: 24px;
   min-height: 72px;
   display: flex;
   justify-content: space-between;
@@ -90,6 +92,31 @@ select {
 
 .nav a {
   text-decoration: none;
+  padding: 12px 0;
+}
+
+.nav a:hover,
+.nav a[aria-current="page"],
+.footer-nav a:hover,
+.back-link:hover {
+  color: var(--gold);
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+.menu-toggle {
+  display: none;
+  border: 1px solid rgba(232, 185, 35, 0.5);
+  border-radius: 6px;
+  padding: 10px 14px;
+  background: transparent;
+  color: var(--cream);
+  cursor: pointer;
 }
 
 .hero {
@@ -292,11 +319,58 @@ select {
   margin: 0;
 }
 
-@media (max-width: 700px) {
-  .nav {
-    display: none;
+.footer-nav {
+  display: flex;
+  gap: 8px 20px;
+  flex-wrap: wrap;
+}
+
+.footer-nav a {
+  padding: 12px 0;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 850px) {
+  .header-inner {
+    flex-wrap: wrap;
+    gap: 0 16px;
+    padding: 14px 0;
   }
 
+  .brand {
+    min-width: 0;
+    flex: 1;
+    font-size: 0.9rem;
+  }
+
+  .brand-dot {
+    flex-shrink: 0;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav {
+    display: none;
+    width: 100%;
+    padding-top: 12px;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .nav.nav-open {
+    display: flex;
+  }
+
+  .nav a {
+    padding: 14px 0;
+    border-top: 1px solid rgba(232, 185, 35, 0.15);
+  }
+}
+
+@media (max-width: 700px) {
   .home-grid,
   .contact-panel {
     grid-template-columns: 1fr;

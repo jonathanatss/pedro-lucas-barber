@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   if (!date || !serviceSlug) {
     return NextResponse.json(
       {
-        error: "Parâmetros obrigatórios ausentes.",
+        error: "Escolha um serviço e uma data.",
       },
       { status: 400, headers },
     );
@@ -25,9 +25,10 @@ export async function GET(request: Request) {
 
     return NextResponse.json(availability, { headers });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Não foi possível carregar a disponibilidade.";
-
-    return NextResponse.json({ error: message }, { status: 400, headers });
+    console.error("booking_availability_failed", error instanceof Error ? error.message : "unknown_error");
+    return NextResponse.json(
+      { error: "Não foi possível carregar os horários. Tente novamente." },
+      { status: 400, headers },
+    );
   }
 }

@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
+import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import MembershipCheckout from "@/components/memberships/MembershipCheckout";
 import { getMembershipPlans } from "@/lib/asaas/plans";
+import { siteRoutes } from "@/lib/navigation";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Clube Mensal | Pedro Lucas Barbearia",
   description:
-    "Assine um plano mensal da Pedro Lucas Barbearia com cobrança recorrente no cartão via Asaas.",
+    "Conheça os planos mensais da Pedro Lucas Barbearia e assine com cartão.",
 };
 
 type ClubPageProps = {
@@ -19,11 +20,11 @@ type ClubPageProps = {
 
 function getStatusMessage(status?: string) {
   if (status === "cancelado") {
-    return "O checkout foi cancelado. Você pode escolher um plano e tentar novamente quando quiser.";
+    return "O pagamento foi cancelado. Você pode tentar novamente quando quiser.";
   }
 
   if (status === "expirado") {
-    return "O link de checkout expirou. Gere uma nova assinatura para continuar.";
+    return "O link de pagamento expirou. Selecione seu plano para continuar.";
   }
 
   return null;
@@ -36,18 +37,16 @@ export default async function ClubPage({ searchParams }: ClubPageProps) {
 
   return (
     <>
-      <Header />
+      <Header activePath={siteRoutes.club} />
       <main>
         <section className="section club-hero">
           <div className="container club-heading">
-            <Link className="back-link" href="/">
-              Voltar para o site
-            </Link>
-            <p className="eyebrow">Planos recorrentes</p>
+            <a className="back-link" href={siteRoutes.home}>
+              Voltar para o início
+            </a>
             <h1 className="section-title">Clube mensal Pedro Lucas Barbearia</h1>
             <p className="section-copy">
-              O cliente escolhe o plano, confirma os dados e cadastra o cartão no checkout
-              seguro do Asaas. A cobrança passa a acontecer automaticamente todo mês.
+              Escolha o plano ideal para você.
             </p>
             {statusMessage ? <div className="status-banner">{statusMessage}</div> : null}
           </div>
@@ -59,6 +58,7 @@ export default async function ClubPage({ searchParams }: ClubPageProps) {
           </div>
         </section>
       </main>
+      <Footer />
     </>
   );
 }

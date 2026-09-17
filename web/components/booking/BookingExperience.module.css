@@ -3,33 +3,6 @@
   gap: 24px;
 }
 
-.hero {
-  display: grid;
-  gap: 16px;
-}
-
-.eyebrow {
-  color: var(--gold);
-  font-size: 0.82rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-
-.title {
-  margin: 0;
-  font-family: "Playfair Display", serif;
-  font-size: clamp(2.4rem, 5vw, 4.8rem);
-  line-height: 0.95;
-}
-
-.lead {
-  max-width: 62ch;
-  font-size: 1rem;
-  line-height: 1.7;
-  color: rgba(244, 240, 228, 0.82);
-}
-
 .layout {
   display: grid;
   gap: 24px;
@@ -100,13 +73,6 @@
 .serviceMeta {
   color: var(--gold);
   font-weight: 700;
-}
-
-.serviceDescription {
-  margin: 10px 0 0;
-  color: rgba(244, 240, 228, 0.74);
-  font-size: 0.95rem;
-  line-height: 1.55;
 }
 
 .formStack {

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import AgendaAdminPanel from "@/components/admin/AgendaAdminPanel";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 import "../../globals.css";
 
@@ -13,5 +15,11 @@ export const metadata: Metadata = {
 };
 
 export default function AdminAgendaPage() {
-  return <AgendaAdminPanel />;
+  return (
+    <>
+      <Header />
+      <AgendaAdminPanel />
+      <Footer />
+    </>
+  );
 }
