@@ -18,7 +18,6 @@ type BookingExperienceProps = {
   businessHours: BusinessHour[];
   embedded?: boolean;
   services: BookingService[];
-  slotIntervalMinutes: number;
   timezone: string;
 };
 
@@ -218,7 +217,6 @@ export default function BookingExperience({
   businessHours,
   embedded = false,
   services,
-  slotIntervalMinutes,
   timezone,
 }: BookingExperienceProps) {
   const [selectedServiceSlug, setSelectedServiceSlug] = useState(services[0]?.slug ?? "");
@@ -249,17 +247,6 @@ export default function BookingExperience({
     () => buildQuickDateOptions(timezone, businessHours, businessBreaks),
     [businessBreaks, businessHours, timezone],
   );
-
-  const standardBusinessHour = useMemo(
-    () =>
-      businessHours.find((businessHour) => businessHour.weekday === 1) ??
-      businessHours.find((businessHour) => !businessHour.isClosed),
-    [businessHours],
-  );
-
-  const standardBusinessWindow = standardBusinessHour
-    ? formatBusinessWindowLabel(standardBusinessHour, businessBreaks)
-    : "horário configurado no painel";
 
   const manualFallbackHref = useMemo(() => {
     if (!formError || !selectedService || !selectedDate || !selectedTime) {
@@ -427,9 +414,7 @@ export default function BookingExperience({
         </section>
       ) : null}
 
-      <div
-        className={`${styles.layout} ${embedded ? styles.layoutEmbedded : ""}`.trim()}
-      >
+      <div className={styles.layout}>
         <section className={styles.panel}>
           <h2 className={styles.panelTitle}>Monte seu agendamento</h2>
           <p className={styles.panelLead}>
@@ -644,70 +629,6 @@ export default function BookingExperience({
             </button>
           </form>
         </section>
-
-        <aside className={styles.panel}>
-          <h2 className={styles.panelTitle}>Resumo operacional</h2>
-          <p className={styles.panelLead}>
-            Esse fluxo já nasce preparado para agenda profissional, com disponibilidade em tempo
-            real e sincronização com calendário.
-          </p>
-
-          <ul className={styles.infoList}>
-            <li className={styles.infoItem}>
-              <span className={styles.infoLabel}>Serviço selecionado</span>
-              <div className={styles.infoValue}>
-                {selectedService ? (
-                  <>
-                    <strong>{selectedService.name}</strong>
-                    <br />
-                    {selectedService.priceLabel} · {selectedService.durationMinutes} min
-                  </>
-                ) : (
-                  "Escolha um serviço para ver os detalhes."
-                )}
-              </div>
-            </li>
-            <li className={styles.infoItem}>
-              <span className={styles.infoLabel}>Janela operacional</span>
-              <div className={styles.infoValue}>
-                Segunda a sábado, das {standardBusinessWindow}.
-                <br />
-                Domingo fechado.
-              </div>
-            </li>
-            <li className={styles.infoItem}>
-              <span className={styles.infoLabel}>Regras do slot</span>
-              <div className={styles.infoValue}>
-                Os horários disponíveis são gerados de {slotIntervalMinutes} em{" "}
-                {slotIntervalMinutes} minutos e já consideram duração do serviço,
-                pausa de almoço e bloqueios vindos da agenda.
-              </div>
-            </li>
-          </ul>
-
-          <div className={styles.note}>
-            Se preferir, o cliente ainda pode chamar no WhatsApp. Mas a ideia desse fluxo é que a
-            reserva já saia do site pronta para operação.
-          </div>
-
-          <div className={styles.panelTitle} style={{ marginTop: "24px" }}>
-            Configuração atual
-          </div>
-          <div className={styles.summary}>
-            <div className={styles.summaryRow}>
-              <span className={styles.summaryLabel}>Timezone</span>
-              <span className={styles.summaryValue}>{timezone}</span>
-            </div>
-            <div className={styles.summaryRow}>
-              <span className={styles.summaryLabel}>Dias cadastrados</span>
-              <span className={styles.summaryValue}>{businessHours.length}</span>
-            </div>
-            <div className={styles.summaryRow}>
-              <span className={styles.summaryLabel}>Serviços no catálogo</span>
-              <span className={styles.summaryValue}>{services.length}</span>
-            </div>
-          </div>
-        </aside>
       </div>
     </div>
   );

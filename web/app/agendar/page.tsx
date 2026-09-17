@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import BookingExperience from "@/components/booking/BookingExperience";
 import { getBookingCatalog } from "@/lib/booking/catalog";
-import { slotIntervalMinutes } from "@/lib/booking/config";
 
 import "../globals.css";
 
@@ -39,7 +38,6 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
           businessHours={catalog.businessHours}
           embedded={embedded}
           services={catalog.services}
-          slotIntervalMinutes={slotIntervalMinutes}
           timezone={catalog.timezone}
         />
       </div>
