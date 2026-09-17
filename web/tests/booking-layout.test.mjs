@@ -9,6 +9,13 @@ import { renderToStaticMarkup } from "react-dom/server";
 import ts from "typescript";
 
 const loadDependency = createRequire(import.meta.url);
+const customerSource = readFileSync(new URL("../lib/booking/customer-validation.ts", import.meta.url), "utf8");
+const customerModule = { exports: {} };
+runInNewContext(ts.transpileModule(customerSource, {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: true },
+}).outputText, {
+  module: customerModule, exports: customerModule.exports, require: loadDependency,
+});
 const filename = fileURLToPath(new URL("../components/booking/BookingExperience.tsx", import.meta.url));
 const source = readFileSync(filename, "utf8");
 const { outputText } = ts.transpileModule(source, {
@@ -24,6 +31,9 @@ runInNewContext(outputText, {
   module: compiledModule,
   exports: compiledModule.exports,
   require: (name) => {
+    if (name === "@/lib/booking/customer-validation") {
+      return customerModule.exports;
+    }
     if (name.endsWith(".module.css")) {
       return { layout: "booking-layout", panel: "booking-panel" };
     }
@@ -63,6 +73,12 @@ for (const embedded of [false, true]) {
     assert.match(html, /id="booking-date"/);
     assert.match(html, /id="customer-name"/);
     assert.match(html, /Confirmar agendamento/);
+    assert.match(html, /Nome completo \(obrigat\u00f3rio\)/);
+    assert.match(html, /WhatsApp com DDD \(obrigat\u00f3rio\)/);
+    assert.match(html, /<input[^>]*id="customer-name"[^>]*required=""/);
+    assert.match(html, /<input[^>]*id="customer-phone"[^>]*required=""/);
+    assert.match(html, /<button[^>]*type="submit"[^>]*disabled=""/);
+    assert.match(html, /id="booking-submit-hint"/);
     assert.equal(html.includes("<h1"), !embedded);
   });
 }

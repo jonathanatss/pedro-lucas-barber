@@ -10,6 +10,12 @@ import type {
 } from "@/lib/booking/types";
 
 import { siteContent } from "@/content/site";
+import {
+  areRequiredCustomerFieldsValid,
+  getBookingCustomerErrors,
+  type BookingCustomerErrors,
+  type BookingCustomerField,
+} from "@/lib/booking/customer-validation";
 
 import styles from "./BookingExperience.module.css";
 
@@ -36,6 +42,26 @@ type BookingFormState = {
   customerPhone: string;
   notes: string;
 };
+
+type AppointmentErrorResponse = {
+  code?: string;
+  error?: string;
+  details?: { fieldErrors?: Partial<Record<BookingCustomerField, string[]>> };
+};
+
+const customerInputIds: Record<BookingCustomerField, string> = {
+  customerName: "customer-name",
+  customerPhone: "customer-phone",
+  customerEmail: "customer-email",
+};
+
+function focusFirstCustomerError(errors: BookingCustomerErrors) {
+  const field = (Object.keys(customerInputIds) as BookingCustomerField[])
+    .find((key) => errors[key]);
+  if (field) {
+    document.getElementById(customerInputIds[field])?.focus();
+  }
+}
 
 type QuickDateOption = {
   date: string;
@@ -195,9 +221,9 @@ function buildManualBookingWhatsAppHref({
 }) {
   const dateLabel = formatDateForHumans(date, timezone);
   const message = [
-    `Olá! Tentei agendar pelo site da ${siteContent.businessName}, mas a confirmação automática falhou.`,
+    `Olá! Tentei agendar pelo site da ${siteContent.businessName}, mas não consegui obter a confirmação.`,
     "",
-    "Pode confirmar esse horário para mim?",
+    "Pode verificar se a reserva foi registrada e confirmar esse horário para mim?",
     `Nome: ${form.customerName || "Não informado"}`,
     `WhatsApp: ${form.customerPhone || "Não informado"}`,
     form.customerEmail ? `E-mail: ${form.customerEmail}` : null,
@@ -229,6 +255,9 @@ export default function BookingExperience({
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [canUseManualFallback, setCanUseManualFallback] = useState(false);
+  const [touchedFields, setTouchedFields] = useState<Partial<Record<BookingCustomerField, boolean>>>({});
+  const [serverFieldErrors, setServerFieldErrors] = useState<BookingCustomerErrors>({});
   const [success, setSuccess] = useState<AppointmentResponse | null>(null);
   const [availabilityVersion, setAvailabilityVersion] = useState(0);
   const [form, setForm] = useState<BookingFormState>({
@@ -237,6 +266,25 @@ export default function BookingExperience({
     customerEmail: "",
     notes: "",
   });
+
+  const requiredFieldsValid = areRequiredCustomerFieldsValid(form);
+  const customerErrors = getBookingCustomerErrors(form);
+  const visibleCustomerErrors: BookingCustomerErrors = {};
+  for (const field of Object.keys(customerInputIds) as BookingCustomerField[]) {
+    visibleCustomerErrors[field] = serverFieldErrors[field] ??
+      (touchedFields[field] ? customerErrors[field] : undefined);
+  }
+
+  function updateCustomerField(field: BookingCustomerField, value: string) {
+    setForm((current) => ({ ...current, [field]: value }));
+    setServerFieldErrors((current) => ({ ...current, [field]: undefined }));
+    setFormError(null);
+    setCanUseManualFallback(false);
+  }
+
+  function markCustomerFieldTouched(field: BookingCustomerField) {
+    setTouchedFields((current) => ({ ...current, [field]: true }));
+  }
 
   const selectedService = useMemo(
     () => services.find((service) => service.slug === selectedServiceSlug) ?? services[0] ?? null,
@@ -249,7 +297,8 @@ export default function BookingExperience({
   );
 
   const manualFallbackHref = useMemo(() => {
-    if (!formError || !selectedService || !selectedDate || !selectedTime) {
+    if (!canUseManualFallback || !formError || !requiredFieldsValid ||
+      !selectedService || !selectedDate || !selectedTime) {
       return null;
     }
 
@@ -260,7 +309,7 @@ export default function BookingExperience({
       time: selectedTime,
       timezone,
     });
-  }, [form, formError, selectedDate, selectedService, selectedTime, timezone]);
+  }, [canUseManualFallback, form, formError, requiredFieldsValid, selectedDate, selectedService, selectedTime, timezone]);
 
   useEffect(() => {
     if (!selectedServiceSlug || !selectedDate) {
@@ -341,6 +390,19 @@ export default function BookingExperience({
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (isSubmitting) {
+      return;
+    }
+    setCanUseManualFallback(false);
+    setServerFieldErrors({});
+    setTouchedFields({ customerName: true, customerPhone: true, customerEmail: true });
+    const validationErrors = getBookingCustomerErrors(form);
+    if (Object.keys(validationErrors).length) {
+      setFormError("Revise os campos indicados antes de confirmar.");
+      focusFirstCustomerError(validationErrors);
+      return;
+    }
+
     if (!selectedServiceSlug || !selectedDate || !selectedTime) {
       setFormError("Selecione serviço, data e horário antes de confirmar.");
       return;
@@ -366,35 +428,48 @@ export default function BookingExperience({
 
       const payload = (await response.json()) as
         | AppointmentResponse
-        | { code?: string; error?: string };
+        | AppointmentErrorResponse;
 
       if (!response.ok) {
+        const failure = payload as AppointmentErrorResponse;
+        if (response.status === 400 && failure.details?.fieldErrors) {
+          const errors: BookingCustomerErrors = {};
+          for (const field of Object.keys(customerInputIds) as BookingCustomerField[]) {
+            const message = failure.details.fieldErrors[field]?.[0];
+            if (message) {
+              errors[field] = message;
+            }
+          }
+          setServerFieldErrors(errors);
+          focusFirstCustomerError(errors);
+        }
         if ("code" in payload && payload.code?.startsWith("slot_")) {
           setAvailabilityVersion((current) => current + 1);
         }
 
-        throw new Error(
+        setCanUseManualFallback(response.status >= 500);
+        setFormError(
           "error" in payload
             ? payload.error ?? "Não foi possível confirmar o agendamento."
             : "Não foi possível confirmar o agendamento.",
         );
+        return;
       }
 
       setSuccess(payload as AppointmentResponse);
       setAvailabilityVersion((current) => current + 1);
       setSelectedTime("");
+      setTouchedFields({});
+      setServerFieldErrors({});
       setForm({
         customerName: "",
         customerPhone: "",
         customerEmail: "",
         notes: "",
       });
-    } catch (error) {
-      setFormError(
-        error instanceof Error
-          ? error.message
-          : "Não foi possível confirmar o agendamento.",
-      );
+    } catch {
+      setCanUseManualFallback(true);
+      setFormError("Não foi possível obter a confirmação. Antes de repetir, consulte o barbeiro pelo WhatsApp para verificar se a reserva foi registrada.");
     } finally {
       setIsSubmitting(false);
     }
@@ -420,6 +495,7 @@ export default function BookingExperience({
           <p className={styles.panelLead}>
             Selecione o serviço, escolha a data e reserve um horário disponível em tempo real.
           </p>
+          <p className={styles.helper}>Nome completo e WhatsApp são campos obrigatórios.</p>
 
           <form className={styles.formStack} onSubmit={handleSubmit}>
             <div className={styles.fieldGroup}>
@@ -527,50 +603,79 @@ export default function BookingExperience({
 
             <div className={styles.fieldGroup}>
               <label className={styles.label} htmlFor="customer-name">
-                Nome completo
+                Nome completo (obrigatório)
               </label>
               <input
                 id="customer-name"
                 className={styles.input}
                 type="text"
+                required
+                minLength={3}
+                maxLength={120}
+                autoComplete="name"
+                aria-invalid={Boolean(visibleCustomerErrors.customerName)}
+                aria-describedby={visibleCustomerErrors.customerName ? "customer-name-error" : undefined}
                 placeholder="Seu nome"
                 value={form.customerName}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, customerName: event.target.value }))
-                }
+                onChange={(event) => updateCustomerField("customerName", event.target.value)}
+                onBlur={() => markCustomerFieldTouched("customerName")}
               />
+              {visibleCustomerErrors.customerName ? (
+                <span id="customer-name-error" className={styles.fieldError} role="alert">
+                  {visibleCustomerErrors.customerName}
+                </span>
+              ) : null}
             </div>
 
             <div className={styles.fieldGroup}>
               <label className={styles.label} htmlFor="customer-phone">
-                WhatsApp
+                WhatsApp com DDD (obrigatório)
               </label>
               <input
                 id="customer-phone"
                 className={styles.input}
                 type="tel"
+                required
+                maxLength={30}
+                autoComplete="tel"
+                aria-invalid={Boolean(visibleCustomerErrors.customerPhone)}
+                aria-describedby={`customer-phone-hint${visibleCustomerErrors.customerPhone ? " customer-phone-error" : ""}`}
                 placeholder="(84) 99999-9999"
                 value={form.customerPhone}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, customerPhone: event.target.value }))
-                }
+                onChange={(event) => updateCustomerField("customerPhone", event.target.value)}
+                onBlur={() => markCustomerFieldTouched("customerPhone")}
               />
+              <span id="customer-phone-hint" className={styles.helper}>
+                Informe o número com DDD. Exemplo: (84) 99999-9999.
+              </span>
+              {visibleCustomerErrors.customerPhone ? (
+                <span id="customer-phone-error" className={styles.fieldError} role="alert">
+                  {visibleCustomerErrors.customerPhone}
+                </span>
+              ) : null}
             </div>
 
             <div className={styles.fieldGroup}>
               <label className={styles.label} htmlFor="customer-email">
-                E-mail
+                E-mail (opcional)
               </label>
               <input
                 id="customer-email"
                 className={styles.input}
                 type="email"
+                autoComplete="email"
+                aria-invalid={Boolean(visibleCustomerErrors.customerEmail)}
+                aria-describedby={visibleCustomerErrors.customerEmail ? "customer-email-error" : undefined}
                 placeholder="voce@exemplo.com"
                 value={form.customerEmail}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, customerEmail: event.target.value }))
-                }
+                onChange={(event) => updateCustomerField("customerEmail", event.target.value)}
+                onBlur={() => markCustomerFieldTouched("customerEmail")}
               />
+              {visibleCustomerErrors.customerEmail ? (
+                <span id="customer-email-error" className={styles.fieldError} role="alert">
+                  {visibleCustomerErrors.customerEmail}
+                </span>
+              ) : null}
             </div>
 
             <div className={styles.fieldGroup}>
@@ -589,7 +694,7 @@ export default function BookingExperience({
             </div>
 
             {formError ? (
-              <div className={`${styles.note} ${styles.error}`}>
+              <div className={`${styles.note} ${styles.error}`} role="alert">
                 <p className={styles.noteText}>{formError}</p>
                 {manualFallbackHref ? (
                   <div className={styles.manualFallbackActions}>
@@ -624,7 +729,17 @@ export default function BookingExperience({
               </div>
             ) : null}
 
-            <button className={styles.submit} type="submit" disabled={isSubmitting}>
+            {!requiredFieldsValid ? (
+              <span id="booking-submit-hint" className={styles.helper}>
+                Preencha Nome completo e WhatsApp corretamente para liberar a confirmação.
+              </span>
+            ) : null}
+            <button
+              className={styles.submit}
+              type="submit"
+              disabled={isSubmitting || !requiredFieldsValid}
+              aria-describedby={!requiredFieldsValid ? "booking-submit-hint" : undefined}
+            >
               {isSubmitting ? "Confirmando agendamento..." : "Confirmar agendamento"}
             </button>
           </form>

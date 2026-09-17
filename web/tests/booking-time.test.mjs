@@ -83,6 +83,7 @@ function setup(
     },
   };
   const overrides = {
+    "@/lib/booking/customer-validation": loadModule("../lib/booking/customer-validation.ts", {}, clock),
     "@/lib/booking/time": time,
     "@/lib/booking/config": { defaultBusinessBreaks: businessBreaks, slotIntervalMinutes: 40 },
     "@/lib/booking/catalog": { getBookingCatalog: async () => catalog },
@@ -199,6 +200,21 @@ test("future bookings are still accepted", async () => {
   assert.equal(result.start, "2026-09-17T12:00:00.000Z");
   assert.equal(app.writes(), 3);
 });
+
+for (const [field, value] of [
+  ["customerName", ""],
+  ["customerName", "   "],
+  ["customerPhone", ""],
+  ["customerPhone", "invalid phone"],
+]) {
+  test(`confirmation rejects invalid ${field}: ${JSON.stringify(value)} without writes`, async () => {
+    const app = setup();
+    await assert.rejects(app.appointments.createAppointment({
+      ...input("2026-09-17", "09:00"), [field]: value,
+    }), (error) => error.issues?.some((issue) => issue.path[0] === field));
+    assert.equal(app.writes(), 0);
+  });
+}
 
 test("availability responses cannot be cached", async () => {
   const clock = { value: Date.parse("2026-09-16T21:20:01Z") };

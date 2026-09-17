@@ -4,6 +4,7 @@ import { createGoogleCalendarEvent } from "@/lib/google-calendar";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getAvailabilityForDate } from "@/lib/booking/availability";
 import { getBookingCatalog } from "@/lib/booking/catalog";
+import { bookingCustomerSchema } from "@/lib/booking/customer-validation";
 import {
   addMinutesSafe,
   buildUtcDate,
@@ -14,10 +15,7 @@ import {
 import { notifyBarberOnWhatsApp } from "@/lib/booking/whatsapp-notification";
 import { getMissingSupabaseServiceCredentials } from "@/lib/env";
 
-const appointmentInputSchema = z.object({
-  customerEmail: z.string().email().optional().or(z.literal("")),
-  customerName: z.string().trim().min(3).max(120),
-  customerPhone: z.string().trim().min(8).max(30),
+const appointmentInputSchema = bookingCustomerSchema.extend({
   date: z.string().refine(isIsoDateString, "Data inválida."),
   notes: z.string().trim().max(500).optional().or(z.literal("")),
   serviceSlug: z.string().trim().min(2).max(120),
